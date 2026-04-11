@@ -33,10 +33,25 @@ let g:tokyonight_enable_italic = 1        " italics for keywords/comments
 let g:tokyonight_transparent_background = 0
 silent! colorscheme tokyonight
 
+" ── lightline (statusline theme) ──────────────────────────────────────────────
+" Must be set before lightline loads — matches tokyonight
+let g:lightline = {
+  \ 'colorscheme': 'tokyonight',
+  \ 'active': {
+  \   'left':  [['mode', 'paste'], ['gitbranch', 'readonly', 'filename', 'modified']],
+  \   'right': [['lineinfo'], ['percent'], ['fileformat', 'fileencoding', 'filetype']]
+  \ },
+  \ 'component_function': {
+  \   'gitbranch': 'FugitiveHead',
+  \ },
+  \ }
+set noshowmode                  " hide -- INSERT -- since lightline shows it
+
 syntax enable
 set number relativenumber       " hybrid line numbers
 set cursorline                  " highlight current line
-set signcolumn=yes              " always show sign column
+set signcolumn=auto             " only show sign column when needed
+" set colorcolumn=80,120        " column rulers (disabled)
 set showmatch                   " highlight matching brackets
 
 " ── editing ───────────────────────────────────────────────────────────────────
