@@ -4,7 +4,7 @@
 set -euo pipefail
 
 DOTFILES_REPO="https://github.com/ssspetrovic/dotfiles.git"
-DOTFILES_DIR="$HOME/dotfiles"
+DOTFILES_DIR="$HOME/.dotfiles"
 
 # ── colours ───────────────────────────────────────────────────────────────────
 RED='\033[0;31m'
