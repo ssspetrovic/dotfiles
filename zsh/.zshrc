@@ -52,10 +52,16 @@ if [[ -f /usr/share/zsh/vendor-completions/_docker ]]; then
   fpath+=(/usr/share/zsh/vendor-completions)
 fi
 
+# ── history search fix ────────────────────────────────────────────────────────
+autoload -Uz up-line-or-beginning-search
+autoload -Uz down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+
 # ── key bindings ──────────────────────────────────────────────────────────────
-bindkey -e                               # emacs key bindings (change to -v for vi)
-bindkey '^[[A' history-search-backward   # up arrow: history search
-bindkey '^[[B' history-search-forward    # down arrow: history search
+bindkey -e
+bindkey '^[[A' up-line-or-beginning-search   # Up arrow
+bindkey '^[[B' down-line-or-beginning-search # Down arrow
 bindkey '^[[H' beginning-of-line         # home
 bindkey '^[[F' end-of-line               # end
 bindkey '^[[3~' delete-char              # delete
