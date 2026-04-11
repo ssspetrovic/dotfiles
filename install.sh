@@ -26,6 +26,16 @@ bash "$DOTFILES_DIR/scripts/install_packages.sh"
 section "Homebrew"
 bash "$DOTFILES_DIR/scripts/install_brew.sh"
 
+# Ensure brew is in PATH for the rest of this session — install_brew.sh runs
+# in a subshell so its eval doesn't propagate back to here.
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+elif [[ -f /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+elif [[ -f /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi
+
 # ── step 3: brew bundle ───────────────────────────────────────────────────────
 section "Brew Bundle"
 if command -v brew &>/dev/null; then
@@ -48,16 +58,21 @@ esac
 
 # ── step 6: set default shell to zsh ──────────────────────────────────────────
 section "Default shell"
-if [[ "$SHELL" != "$(command -v zsh)" ]]; then
+ZSH_PATH="$(command -v zsh)"
+if [[ "$SHELL" == "$ZSH_PATH" ]]; then
+  info "zsh is already the default shell"
+else
   info "Setting zsh as default shell..."
-  ZSH_PATH="$(command -v zsh)"
   if ! grep -qF "$ZSH_PATH" /etc/shells; then
     echo "$ZSH_PATH" | sudo tee -a /etc/shells
   fi
-  chsh -s "$ZSH_PATH"
-  info "Shell changed — re-login to take effect"
-else
-  info "zsh is already the default shell"
+  # chsh fails non-interactively on Ubuntu (PAM); usermod is more reliable
+  if command -v usermod &>/dev/null; then
+    sudo usermod -s "$ZSH_PATH" "$USER"
+  else
+    chsh -s "$ZSH_PATH"
+  fi
+  info "Shell changed to $ZSH_PATH — re-login to take effect"
 fi
 
 section "Done! Open a new terminal or run: exec zsh"
