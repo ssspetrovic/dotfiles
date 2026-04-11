@@ -40,6 +40,7 @@ brew "jq"                       # JSON processor
 brew "yq"                       # YAML processor
 brew "httpie"                   # curl replacement for APIs
 brew "just"                     # command runner (Makefile alternative)
+brew "btop"                     # top, but pretty
 
 # ── kubernetes / containers ───────────────────────────────────────────────────
 brew "kubectl"
@@ -50,6 +51,9 @@ brew "kubectx"                  # fast context/namespace switching (kubectx + ku
 # ── network / infra ───────────────────────────────────────────────────────────
 brew "nmap"
 brew "mtr"                      # traceroute + ping
+
+# ── visual ─────────────────────────────────────────────────────────────────---
+brew "fastfetch"                # pretty
 
 # ── macOS only ────────────────────────────────────────────────────────────────
 # These are ignored on Linux (brew skips unknown casks on Linux)
