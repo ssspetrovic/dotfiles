@@ -61,6 +61,25 @@ bindkey '^[[3~' delete-char              # delete
 bindkey '^[[1;5C' forward-word           # Ctrl+right
 bindkey '^[[1;5D' backward-word          # Ctrl+left
 
+# ── sudo plugin (Esc Esc to prepend sudo) ────────────────────────────────────
+# Reimplements the OMZ sudo plugin without the framework
+_sudo_command_line() {
+  [[ -z $BUFFER ]] && zle up-history
+  if [[ $BUFFER == sudo\ * ]]; then
+    LBUFFER="${LBUFFER#sudo }"
+  elif [[ $BUFFER == $EDITOR\ * ]]; then
+    LBUFFER="${LBUFFER#$EDITOR }"
+    LBUFFER="sudoedit $LBUFFER"
+  elif [[ $BUFFER == sudoedit\ * ]]; then
+    LBUFFER="${LBUFFER#sudoedit }"
+    LBUFFER="$EDITOR $LBUFFER"
+  else
+    LBUFFER="sudo $LBUFFER"
+  fi
+}
+zle -N _sudo_command_line
+bindkey '\e\e' _sudo_command_line    # Esc Esc
+
 # ── colored man pages ─────────────────────────────────────────────────────────
 export LESS_TERMCAP_mb=$'\e[1;32m'
 export LESS_TERMCAP_md=$'\e[1;32m'

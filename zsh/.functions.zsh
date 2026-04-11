@@ -66,3 +66,41 @@ brew-dump() {
   brew bundle dump --file="$HOME/dotfiles/brew/Brewfile" --force
   echo "Brewfile updated"
 }
+
+# ── web-search: search the web from the terminal ─────────────────────────────
+# Usage: google foo bar | github sindresorhus | ddg privacy tools
+_web_search() {
+  local engine="$1"; shift
+  local query="${(j:+:)@}"   # join args with +
+  local url
+
+  case "$engine" in
+    google)    url="https://www.google.com/search?q=${query}" ;;
+    ddg|duck)  url="https://duckduckgo.com/?q=${query}" ;;
+    github)    url="https://github.com/search?q=${query}" ;;
+    yt|youtube) url="https://www.youtube.com/results?search_query=${query}" ;;
+    maps)      url="https://maps.google.com/maps?q=${query}" ;;
+    wiki)      url="https://en.wikipedia.org/w/index.php?search=${query}" ;;
+    *)         echo "web-search: unknown engine '$engine'"; return 1 ;;
+  esac
+
+  # open in browser — works on macOS, Linux (xdg-open), and WSL2 (explorer.exe)
+  if command -v xdg-open &>/dev/null; then
+    xdg-open "$url"
+  elif command -v open &>/dev/null; then
+    open "$url"
+  elif command -v explorer.exe &>/dev/null; then
+    explorer.exe "$url"
+  else
+    echo "Open: $url"
+  fi
+}
+
+google()  { _web_search google "$@" }
+ddg()     { _web_search ddg "$@" }
+duck()    { _web_search ddg "$@" }
+github()  { _web_search github "$@" }
+youtube() { _web_search yt "$@" }
+yt()      { _web_search yt "$@" }
+maps()    { _web_search maps "$@" }
+wiki()    { _web_search wiki "$@" }
