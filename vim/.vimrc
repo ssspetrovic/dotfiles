@@ -27,11 +27,15 @@ endif
 set termguicolors
 set background=dark
 
-" tokyonight — use 'tokyonight' or 'tokyonight-storm' (darker, recommended)
+" tokyonight — only load if plugin is installed, fallback to desert
 let g:tokyonight_style = 'storm'          " storm | night
 let g:tokyonight_enable_italic = 1        " italics for keywords/comments
 let g:tokyonight_transparent_background = 0
-silent! colorscheme tokyonight
+if !empty(glob('~/.vim/plugged/tokyonight-vim'))
+  colorscheme tokyonight
+else
+  colorscheme desert              " built-in fallback until :PlugInstall is run
+endif
 
 " ── lightline (statusline theme) ──────────────────────────────────────────────
 " Must be set before lightline loads — matches tokyonight
