@@ -10,8 +10,8 @@ elif [[ -f /etc/os-release ]]; then
   source /etc/os-release
   DISTRO="${ID:-unknown}"
   case "$ID" in
-    ubuntu|debian) OS="ubuntu" ;;
-    fedora)        OS="fedora" ;;
+    ubuntu | debian) OS="ubuntu" ;;
+    fedora) OS="fedora" ;;
     *)
       echo "[detect_os] Warning: unrecognised distro '$ID', treating as ubuntu" >&2
       OS="ubuntu"

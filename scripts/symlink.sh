@@ -4,8 +4,10 @@ set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()    { echo -e "${GREEN}[stow]${NC} $*"; }
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+info() { echo -e "${GREEN}[stow]${NC} $*"; }
 warning() { echo -e "${YELLOW}[stow]${NC} $*"; }
 
 # ── ensure stow is available ──────────────────────────────────────────────────

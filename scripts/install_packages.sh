@@ -18,7 +18,7 @@ COMMON_PACKAGES=(
   zsh
   vim
   tmux
-  stow          # GNU stow for symlinking
+  stow # GNU stow for symlinking
   unzip
   tree
   htop
@@ -39,7 +39,7 @@ FEDORA_EXTRA=(
   gnupg2
 )
 
-MACOS_EXTRA=()  # Handled by xcode-select in bootstrap + Brewfile
+MACOS_EXTRA=() # Handled by xcode-select in bootstrap + Brewfile
 
 # ── install ───────────────────────────────────────────────────────────────────
 case "$OS" in
@@ -51,7 +51,7 @@ case "$OS" in
     ;;
   fedora)
     info "Updating dnf..."
-    sudo dnf check-update -q || true   # dnf returns 100 if updates available — not an error
+    sudo dnf check-update -q || true # dnf returns 100 if updates available — not an error
     info "Installing packages..."
     sudo dnf install -y "${COMMON_PACKAGES[@]}" "${FEDORA_EXTRA[@]}"
     ;;

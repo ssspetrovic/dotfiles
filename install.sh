@@ -6,10 +6,17 @@ set -euo pipefail
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # ── colours ───────────────────────────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; CYAN='\033[0;36m'; NC='\033[0m'
-info()    { echo -e "${GREEN}[install]${NC} $*"; }
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+NC='\033[0m'
+info() { echo -e "${GREEN}[install]${NC} $*"; }
 warning() { echo -e "${YELLOW}[install]${NC} $*"; }
-error()   { echo -e "${RED}[install]${NC} $*" >&2; exit 1; }
+error() {
+  echo -e "${RED}[install]${NC} $*" >&2
+  exit 1
+}
 section() { echo -e "\n${CYAN}══ $* ══${NC}"; }
 
 # ── source helpers ─────────────────────────────────────────────────────────────
@@ -53,7 +60,7 @@ section "OS-specific setup"
 case "$OS" in
   ubuntu) bash "$DOTFILES_DIR/os/ubuntu.sh" ;;
   fedora) bash "$DOTFILES_DIR/os/fedora.sh" ;;
-  macos)  bash "$DOTFILES_DIR/os/macos.sh"  ;;
+  macos) bash "$DOTFILES_DIR/os/macos.sh" ;;
 esac
 
 # ── step 6: set default shell to zsh ──────────────────────────────────────────

@@ -7,10 +7,16 @@ DOTFILES_REPO="https://github.com/ssspetrovic/dotfiles.git"
 DOTFILES_DIR="$HOME/dotfiles"
 
 # ── colours ───────────────────────────────────────────────────────────────────
-RED='\033[0;31m'; GREEN='\033[0;32m'; YELLOW='\033[1;33m'; NC='\033[0m'
-info()    { echo -e "${GREEN}[bootstrap]${NC} $*"; }
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+info() { echo -e "${GREEN}[bootstrap]${NC} $*"; }
 warning() { echo -e "${YELLOW}[bootstrap]${NC} $*"; }
-error()   { echo -e "${RED}[bootstrap]${NC} $*" >&2; exit 1; }
+error() {
+  echo -e "${RED}[bootstrap]${NC} $*" >&2
+  exit 1
+}
 
 # ── detect OS ─────────────────────────────────────────────────────────────────
 detect_os() {
@@ -20,9 +26,9 @@ detect_os() {
     # shellcheck disable=SC1091
     source /etc/os-release
     case "$ID" in
-      ubuntu|debian) echo "ubuntu" ;;
-      fedora)        echo "fedora" ;;
-      *)             error "Unsupported distro: $ID" ;;
+      ubuntu | debian) echo "ubuntu" ;;
+      fedora) echo "fedora" ;;
+      *) error "Unsupported distro: $ID" ;;
     esac
   else
     error "Cannot detect OS"

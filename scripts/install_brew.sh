@@ -30,7 +30,7 @@ case "$OS" in
       eval "$(/usr/local/bin/brew shellenv)"
     fi
     ;;
-  ubuntu|fedora)
+  ubuntu | fedora)
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     ;;
 esac
