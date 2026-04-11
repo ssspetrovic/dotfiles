@@ -149,7 +149,7 @@ fi
 # Prints time on the right side of the terminal before each prompt.
 # Pure renders its own right-prompt so we use RPROMPT with a precmd hook.
 _prompt_timestamp() {
-  RPROMPT="%F{242}%T%f"    # 24h time in muted grey, e.g. 14:23:01
+  RPROMPT="%F{242}%D{%H:%M:%S}%f"
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _prompt_timestamp
