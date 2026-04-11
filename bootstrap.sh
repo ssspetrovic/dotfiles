@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # bootstrap.sh — curl-able entry point
-# Usage: curl -fsSL https://raw.githubusercontent.com/YOU/dotfiles/master/bootstrap.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/ssspetrovic/dotfiles/main/bootstrap.sh | bash
 set -euo pipefail
 
 DOTFILES_REPO="https://github.com/ssspetrovic/dotfiles.git"
