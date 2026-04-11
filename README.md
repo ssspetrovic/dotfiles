@@ -2,7 +2,7 @@
 
 Personal development environment for Ubuntu / Fedora / macOS.
 
-**Stack:** zsh · vim · tmux · starship · GNU stow · Homebrew
+**Stack:** zsh · vim · tmux · pure · GNU stow · Homebrew
 
 ---
 
@@ -11,13 +11,13 @@ Personal development environment for Ubuntu / Fedora / macOS.
 ### Fresh machine (curl bootstrap)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ssspetrovic/dotfiles/main/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ssspetrovic/dotfiles/master/bootstrap.sh | bash
 ```
 
 This will:
 1. Install `git` via the native package manager if missing
 2. Clone this repo to `~/dotfiles`
-3. Run `install.sh`
+3. Run `install.sh` — which handles everything including plugins
 
 ### Already cloned
 
@@ -43,29 +43,31 @@ Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, `stow`, `bu
 ### Homebrew (all platforms)
 Dev tooling via `brew/Brewfile`. Highlights:
 
-| Tool | Purpose |
-|---|---|
-| `starship` | Cross-shell prompt |
-| `zoxide` | Smarter `cd` |
-| `eza` | Modern `ls` |
-| `bat` | `cat` with syntax highlighting |
-| `ripgrep` | Fast `grep` |
-| `fd` | Fast `find` |
-| `fzf` | Fuzzy finder |
-| `delta` | Better git diffs |
-| `mise` | Runtime version manager (replaces nvm/pyenv/rbenv) |
-| `lazygit` | Terminal git UI |
-| `gh` | GitHub CLI |
+| Tool      | Purpose                                            |
+| --------- | -------------------------------------------------- |
+| `pure`    | Minimal zsh prompt                                 |
+| `zoxide`  | Smarter `cd`                                       |
+| `eza`     | Modern `ls`                                        |
+| `bat`     | `cat` with syntax highlighting                     |
+| `ripgrep` | Fast `grep`                                        |
+| `fd`      | Fast `find`                                        |
+| `fzf`     | Fuzzy finder                                       |
+| `delta`   | Better git diffs                                   |
+| `mise`    | Runtime version manager (replaces nvm/pyenv/rbenv) |
+| `lazygit` | Terminal git UI                                    |
+| `gh`      | GitHub CLI                                         |
+| `kubectl` | Kubernetes CLI                                     |
+| `helm`    | Kubernetes package manager                         |
+| `k9s`     | Terminal Kubernetes UI                             |
 
 ### dotfiles (via GNU stow)
 
-| Package | Links |
-|---|---|
-| `zsh` | `~/.zshrc`, `~/.zshenv`, `~/.aliases.zsh`, `~/.functions.zsh` |
-| `vim` | `~/.vimrc` |
-| `tmux` | `~/.tmux.conf` |
-| `git` | `~/.gitconfig`, `~/.gitignore_global` |
-| `starship` | `~/.config/starship.toml` |
+| Package | Links                                                         |
+| ------- | ------------------------------------------------------------- |
+| `zsh`   | `~/.zshrc`, `~/.zshenv`, `~/.aliases.zsh`, `~/.functions.zsh` |
+| `vim`   | `~/.vimrc`                                                    |
+| `tmux`  | `~/.tmux.conf`                                                |
+| `git`   | `~/.gitconfig`, `~/.gitignore_global`                         |
 
 ---
 
@@ -74,7 +76,7 @@ Dev tooling via `brew/Brewfile`. Highlights:
 ```
 dotfiles/
 ├── bootstrap.sh        # curl-able entry point
-├── install.sh          # main orchestrator
+├── install.sh          # main orchestrator (runs all steps including plugins)
 ├── brew/
 │   └── Brewfile        # all Homebrew packages
 ├── git/
@@ -82,16 +84,13 @@ dotfiles/
 │   └── .gitignore_global
 ├── os/
 │   ├── macos.sh        # macOS defaults
-│   ├── ubuntu.sh       # Ubuntu extras
+│   ├── ubuntu.sh       # Ubuntu extras (locale, etc.)
 │   └── fedora.sh       # Fedora extras
 ├── scripts/
 │   ├── detect_os.sh    # sets $OS / $DISTRO
 │   ├── install_brew.sh
 │   ├── install_packages.sh
 │   └── symlink.sh      # runs stow
-├── starship/
-│   └── .config/
-│       └── starship.toml
 ├── tmux/
 │   └── .tmux.conf
 ├── vim/
@@ -160,39 +159,46 @@ Or update brew packages:
 brew bundle --file=~/dotfiles/brew/Brewfile
 ```
 
+Or update vim/tmux plugins manually:
+```bash
+vim -Es -u ~/.vimrc +PlugUpdate +qall
+~/.tmux/plugins/tpm/bin/update_plugins all
+```
+
 ---
 
 ## Key Bindings Reference
 
 ### tmux (prefix: `Ctrl-a`)
 
-| Key | Action |
-|---|---|
-| `prefix \|` | Split horizontal |
-| `prefix -` | Split vertical |
-| `prefix h/j/k/l` | Navigate panes |
-| `prefix H/J/K/L` | Resize panes |
-| `prefix r` | Reload config |
-| `prefix I` | Install TPM plugins |
+| Key              | Action                     |
+| ---------------- | -------------------------- |
+| `prefix \|`      | Split horizontal           |
+| `prefix -`       | Split vertical             |
+| `prefix h/j/k/l` | Navigate panes             |
+| `prefix H/J/K/L` | Resize panes               |
+| `prefix r`       | Reload config              |
+| `prefix I`       | Install/update TPM plugins |
 
 ### vim (leader: `Space`)
 
-| Key | Action |
-|---|---|
-| `<leader>f` | Fuzzy find files |
-| `<leader>b` | Fuzzy find buffers |
-| `<leader>g` | Grep (ripgrep) |
-| `<leader>w` | Save |
-| `Ctrl-h/j/k/l` | Navigate splits |
+| Key            | Action             |
+| -------------- | ------------------ |
+| `<leader>f`    | Fuzzy find files   |
+| `<leader>b`    | Fuzzy find buffers |
+| `<leader>g`    | Grep (ripgrep)     |
+| `<leader>w`    | Save               |
+| `Ctrl-h/j/k/l` | Navigate splits    |
 
 ### zsh
 
-| Key | Action |
-|---|---|
-| `Ctrl-r` | fzf history search |
-| `Ctrl-t` | fzf file search |
-| `Alt-c` | fzf cd |
-| `z <name>` | zoxide jump |
+| Key        | Action                          |
+| ---------- | ------------------------------- |
+| `Ctrl-r`   | fzf history search              |
+| `Ctrl-t`   | fzf file search                 |
+| `Alt-c`    | fzf cd                          |
+| `Esc Esc`  | Prepend sudo to current command |
+| `z <name>` | zoxide jump                     |
 
 ---
 
@@ -202,6 +208,6 @@ brew bundle --file=~/dotfiles/brew/Brewfile
 
 **brew not found after install:** Run `exec zsh` or open a new terminal to pick up the updated PATH from `.zshenv`.
 
-**TPM plugins not loading:** Inside tmux, press `prefix + I` to install plugins for the first time.
+**Locale error on Ubuntu:** Run `sudo locale-gen en_US.UTF-8 && sudo update-locale LANG=en_US.UTF-8` then re-login.
 
-**vim plugins not loading:** Run `:PlugInstall` inside vim the first time.
+**WSL2 icons look broken:** Install Cascadia Code NF on the Windows side and set it in Windows Terminal settings.

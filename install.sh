@@ -82,4 +82,32 @@ else
   info "Shell changed to $ZSH_PATH — re-login to take effect"
 fi
 
+# ── step 7: vim plugins ───────────────────────────────────────────────────────
+section "Vim plugins"
+if command -v vim &>/dev/null; then
+  if [[ ! -d "$HOME/.vim/plugged" ]]; then
+    info "Installing vim plugins headlessly..."
+    vim -Es -u "$HOME/.vimrc" +PlugInstall +qall 2>/dev/null
+    info "Vim plugins installed"
+  else
+    info "Vim plugins already installed, updating..."
+    vim -Es -u "$HOME/.vimrc" +PlugUpdate +qall 2>/dev/null
+  fi
+else
+  warning "vim not found, skipping plugin install"
+fi
+
+# ── step 8: tmux plugins ──────────────────────────────────────────────────────
+section "Tmux plugins"
+TPM_DIR="$HOME/.tmux/plugins/tpm"
+if [[ ! -d "$TPM_DIR" ]]; then
+  info "Cloning TPM..."
+  git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+fi
+
+info "Installing tmux plugins headlessly..."
+# TPM supports headless install via its install script directly
+"$TPM_DIR/bin/install_plugins"
+info "Tmux plugins installed"
+
 section "Done! Open a new terminal or run: exec zsh"

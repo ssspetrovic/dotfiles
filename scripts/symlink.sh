@@ -23,7 +23,6 @@ STOW_PACKAGES=(
   vim
   tmux
   git
-  starship
 )
 
 # ── backup helper ─────────────────────────────────────────────────────────────
@@ -43,7 +42,6 @@ backup_if_exists "$HOME/.vimrc"
 backup_if_exists "$HOME/.tmux.conf"
 backup_if_exists "$HOME/.gitconfig"
 backup_if_exists "$HOME/.gitignore_global"
-backup_if_exists "$HOME/.config/starship.toml"
 
 # ── stow each package ─────────────────────────────────────────────────────────
 cd "$DOTFILES_DIR"
