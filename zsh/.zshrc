@@ -22,18 +22,20 @@ setopt EXTENDED_GLOB
 
 # ── completion ────────────────────────────────────────────────────────────────
 autoload -Uz compinit
-# Regenerate compinit cache only once per day
-if [[ -n "$HOME/.zcompdump"(#qN.mh+24) ]]; then
-  compinit
-else
-  compinit -C
-fi
+
+# Fix insecure completion dirs silently (common on brew systems)
+zstyle ':completion:*' rehash true
+compinit -d "$HOME/.zcompdump"
 
 zstyle ':completion:*' menu select
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'  # case-insensitive
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
-zstyle ':completion:*' rehash true                           # auto-find new executables
+
+# ── fzf-tab (better completion UI) ────────────────────────────────────────────
+if [[ -f "$(brew --prefix 2>/dev/null)/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
+  source "$(brew --prefix)/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh"
+fi
 
 # ── kubectl completion ────────────────────────────────────────────────────────
 if command -v kubectl &>/dev/null; then
@@ -45,8 +47,7 @@ if command -v helm &>/dev/null; then
   source <(helm completion zsh)
 fi
 
-# ── docker completion (via CLI plugin) ───────────────────────────────────────
-# Docker Desktop ships its own completions; if using plain docker CLI:
+# ── docker completion ─────────────────────────────────────────────────────────
 if [[ -f /usr/share/zsh/vendor-completions/_docker ]]; then
   fpath+=(/usr/share/zsh/vendor-completions)
 fi
@@ -61,8 +62,7 @@ bindkey '^[[3~' delete-char              # delete
 bindkey '^[[1;5C' forward-word           # Ctrl+right
 bindkey '^[[1;5D' backward-word          # Ctrl+left
 
-# ── sudo plugin (Esc Esc to prepend sudo) ────────────────────────────────────
-# Reimplements the OMZ sudo plugin without the framework
+# ── sudo widget (Esc Esc) ─────────────────────────────────────────────────────
 _sudo_command_line() {
   [[ -z $BUFFER ]] && zle up-history
   if [[ $BUFFER == sudo\ * ]]; then
@@ -78,7 +78,7 @@ _sudo_command_line() {
   fi
 }
 zle -N _sudo_command_line
-bindkey '\e\e' _sudo_command_line    # Esc Esc
+bindkey '\e\e' _sudo_command_line
 
 # ── colored man pages ─────────────────────────────────────────────────────────
 export LESS_TERMCAP_mb=$'\e[1;32m'
@@ -88,6 +88,7 @@ export LESS_TERMCAP_se=$'\e[0m'
 export LESS_TERMCAP_so=$'\e[01;33m'
 export LESS_TERMCAP_ue=$'\e[0m'
 export LESS_TERMCAP_us=$'\e[1;4;31m'
+export MANPAGER="less -R"
 
 # ── source aliases and functions ──────────────────────────────────────────────
 [[ -f "$HOME/.aliases.zsh" ]] && source "$HOME/.aliases.zsh"
@@ -101,7 +102,7 @@ if command -v fzf &>/dev/null; then
   export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
 fi
 
-# ── zoxide (smarter cd, replaces z plugin) ────────────────────────────────────
+# ── zoxide ────────────────────────────────────────────────────────────────────
 if command -v zoxide &>/dev/null; then
   eval "$(zoxide init zsh)"
 fi
@@ -111,33 +112,27 @@ if command -v direnv &>/dev/null; then
   eval "$(direnv hook zsh)"
 fi
 
-# ── mise (runtime version manager) ───────────────────────────────────────────
+# ── mise ──────────────────────────────────────────────────────────────────────
 if command -v mise &>/dev/null; then
   eval "$(mise activate zsh)"
 fi
 
-# ── zsh-autosuggestions (installed via brew) ──────────────────────────────────
+# ── zsh-autosuggestions ───────────────────────────────────────────────────────
 if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
   source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
-  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'          # subtle grey
-  ZSH_AUTOSUGGEST_STRATEGY=(history completion)   # history first, then completion
-  bindkey '^]' autosuggest-accept                 # Ctrl+] to accept suggestion
+  ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
+  ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+  bindkey '^]' autosuggest-accept
 fi
 
-# ── zsh-syntax-highlighting (must be last before prompt) ─────────────────────
+# ── zsh-syntax-highlighting ───────────────────────────────────────────────────
 if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
   source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 
 # ── pure prompt ───────────────────────────────────────────────────────────────
-# Install: brew install pure (or: git clone https://github.com/sindresorhus/pure ~/.zsh/pure)
-# Brew installs into site-functions; manual install needs fpath addition.
 if [[ -d "$HOME/.zsh/pure" ]]; then
-  # manual install path
   fpath+=("$HOME/.zsh/pure")
-elif [[ -d "$(brew --prefix 2>/dev/null)/share/zsh/site-functions" ]]; then
-  # brew install path (already in fpath via brew shellenv)
-  :
 fi
 
 if autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null; then
@@ -146,16 +141,13 @@ if autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null; then
 fi
 
 # ── prompt timestamp ─────────────────────────────────────────────────────────
-# Prints time on the right side of the terminal before each prompt.
-# Pure renders its own right-prompt so we use RPROMPT with a precmd hook.
 _prompt_timestamp() {
-  RPROMPT="%F{242}%D{%H:%M:%S}%f"
+  RPROMPT="%F{8}%D{%H:%M:%S}%f"
 }
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _prompt_timestamp
 
 # ── machine-local overrides ───────────────────────────────────────────────────
-# ~/.zshrc.local is gitignored — put machine-specific config here
 [[ -f "$HOME/.zshrc.local" ]] && source "$HOME/.zshrc.local"
 
 # ── profiling end (uncomment to debug slow startup) ───────────────────────────
