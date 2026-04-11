@@ -142,12 +142,17 @@ fi
 
 if autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null; then
   zstyle ':prompt:pure:git:stash' show yes
-  zstyle ':prompt:pure:prompt:success' color cyan
-  zstyle ':prompt:pure:prompt:error' color red
-  zstyle ':prompt:pure:git:branch' color 242      # muted grey for branch name
-  zstyle ':prompt:pure:path' color blue
   prompt pure
 fi
+
+# ── prompt timestamp ─────────────────────────────────────────────────────────
+# Prints time on the right side of the terminal before each prompt.
+# Pure renders its own right-prompt so we use RPROMPT with a precmd hook.
+_prompt_timestamp() {
+  RPROMPT="%F{242}%T%f"    # 24h time in muted grey, e.g. 14:23:01
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook precmd _prompt_timestamp
 
 # ── machine-local overrides ───────────────────────────────────────────────────
 # ~/.zshrc.local is gitignored — put machine-specific config here
