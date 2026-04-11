@@ -19,20 +19,24 @@ if filereadable(expand('~/.vim/autoload/plug.vim'))
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
     Plug 'junegunn/fzf.vim'            " fzf in vim
     Plug 'itchyny/lightline.vim'       " lightweight statusline
-    Plug 'morhetz/gruvbox'             " colorscheme
+    Plug 'ghifarit53/tokyonight-vim'   " colorscheme
   call plug#end()
 endif
 
 " ── appearance ────────────────────────────────────────────────────────────────
 set termguicolors
 set background=dark
-silent! colorscheme gruvbox
+
+" tokyonight — use 'tokyonight' or 'tokyonight-storm' (darker, recommended)
+let g:tokyonight_style = 'storm'          " storm | night
+let g:tokyonight_enable_italic = 1        " italics for keywords/comments
+let g:tokyonight_transparent_background = 0
+silent! colorscheme tokyonight
 
 syntax enable
 set number relativenumber       " hybrid line numbers
 set cursorline                  " highlight current line
 set signcolumn=yes              " always show sign column
-set colorcolumn=80,120          " column rulers
 set showmatch                   " highlight matching brackets
 
 " ── editing ───────────────────────────────────────────────────────────────────
