@@ -1,0 +1,150 @@
+# starship.toml — cross-shell prompt configuration
+# Docs: https://starship.rs/config/
+
+# ── global ────────────────────────────────────────────────────────────────────
+"$schema" = 'https://starship.rs/config-schema.json'
+
+add_newline = true
+command_timeout = 500
+
+format = """
+$os\
+$username\
+$hostname\
+$directory\
+$git_branch\
+$git_status\
+$git_state\
+$python\
+$node\
+$rust\
+$golang\
+$java\
+$ruby\
+$terraform\
+$docker_context\
+$jobs\
+$cmd_duration\
+$line_break\
+$character"""
+
+# ── os icon ───────────────────────────────────────────────────────────────────
+[os]
+disabled = false
+style = "bold dimmed white"
+
+[os.symbols]
+Ubuntu  = " "
+Fedora  = " "
+Macos   = " "
+Unknown = " "
+
+# ── username (only shown when relevant) ───────────────────────────────────────
+[username]
+show_always = false
+style_user  = "bold yellow"
+style_root  = "bold red"
+format      = "[$user]($style) "
+
+# ── hostname (only shown over SSH) ────────────────────────────────────────────
+[hostname]
+ssh_only = true
+style    = "bold green"
+format   = "[@$hostname]($style) "
+
+# ── directory ─────────────────────────────────────────────────────────────────
+[directory]
+style             = "bold blue"
+format            = "[$path]($style)[$read_only]($read_only_style) "
+truncation_length = 3
+truncate_to_repo  = true
+read_only         = " 󰌾"
+
+[directory.substitutions]
+"~/dotfiles" = "󱂵 dotfiles"
+"~"          = "~"
+
+# ── git ───────────────────────────────────────────────────────────────────────
+[git_branch]
+symbol = " "
+style  = "bold purple"
+format = "[$symbol$branch(:$remote_branch)]($style) "
+
+[git_status]
+style     = "bold red"
+format    = "([$all_status$ahead_behind]($style) )"
+ahead     = "⇡${count}"
+behind    = "⇣${count}"
+diverged  = "⇕⇡${ahead_count}⇣${behind_count}"
+staged    = "[+${count}](green) "
+modified  = "[~${count}](yellow) "
+untracked = "[?${count}](blue) "
+deleted   = "[-${count}](red) "
+stashed   = "[*${count}](cyan) "
+conflicted = "[=${count}](red) "
+
+[git_state]
+format = "\\([$state( $progress_current/$progress_total)]($style)\\) "
+style  = "bold yellow"
+
+# ── runtimes (only shown when relevant files exist) ──────────────────────────
+[python]
+symbol = " "
+style  = "bold yellow"
+format = "[$symbol$pyenv_prefix($version )($virtualenv )]($style)"
+detect_files = ["requirements.txt", "pyproject.toml", "setup.py", ".python-version"]
+
+[nodejs]
+symbol = " "
+style  = "bold green"
+format = "[$symbol($version )]($style)"
+detect_files = ["package.json", ".nvmrc", ".node-version"]
+
+[rust]
+symbol = " "
+style  = "bold red"
+format = "[$symbol($version )]($style)"
+
+[golang]
+symbol = " "
+style  = "bold cyan"
+format = "[$symbol($version )]($style)"
+
+[java]
+symbol = " "
+style  = "bold red"
+format = "[$symbol($version )]($style)"
+
+[ruby]
+symbol = " "
+style  = "bold red"
+format = "[$symbol($version )]($style)"
+
+[terraform]
+symbol = "󱁢 "
+style  = "bold purple"
+format = "[$symbol$workspace]($style) "
+
+[docker_context]
+symbol = " "
+style  = "bold blue"
+format = "[$symbol$context]($style) "
+only_with_files = true
+
+# ── misc ──────────────────────────────────────────────────────────────────────
+[jobs]
+symbol    = " "
+style     = "bold blue"
+threshold = 1
+format    = "[$symbol$number]($style) "
+
+[cmd_duration]
+min_time           = 2_000     # show if command took > 2s
+style              = "bold yellow"
+format             = "[󱎫 $duration]($style) "
+show_notifications = false
+
+[character]
+success_symbol = "[❯](bold green)"
+error_symbol   = "[❯](bold red)"
+vimcmd_symbol  = "[❮](bold green)"

@@ -1,0 +1,60 @@
+# Brewfile — managed by `brew bundle`
+# Run: brew bundle --file=~/dotfiles/brew/Brewfile
+# Add new tools here; run `brew bundle` to apply.
+
+# ── taps ──────────────────────────────────────────────────────────────────────
+# tap "homebrew/cask"           # included by default on macOS
+
+# ── shell & terminal ──────────────────────────────────────────────────────────
+brew "zsh"                      # latest zsh (older on some distros/macOS)
+brew "tmux"
+brew "pure"                     # minimal, fast zsh prompt
+brew "zsh-autosuggestions"      # fish-like autosuggestions
+brew "zsh-syntax-highlighting"  # fish-like syntax highlighting
+brew "zoxide"                   # smarter cd
+brew "direnv"                   # per-directory env vars
+
+# ── modern unix replacements ──────────────────────────────────────────────────
+brew "eza"                      # ls replacement (was exa)
+brew "bat"                      # cat with syntax highlighting
+brew "ripgrep"                  # grep replacement
+brew "fd"                       # find replacement
+brew "fzf"                      # fuzzy finder
+brew "delta"                    # better git diffs
+brew "duf"                      # df replacement
+brew "dust"                     # du replacement
+brew "procs"                    # ps replacement
+brew "bottom"                   # htop replacement (btm)
+
+# ── git extras ────────────────────────────────────────────────────────────────
+brew "gh"                       # GitHub CLI
+brew "lazygit"                  # terminal git UI
+
+# ── editor ────────────────────────────────────────────────────────────────────
+brew "neovim"
+brew "vim"
+
+# ── dev tools ─────────────────────────────────────────────────────────────────
+brew "mise"                     # runtime version manager (replaces nvm/pyenv/rbenv)
+brew "jq"                       # JSON processor
+brew "yq"                       # YAML processor
+brew "httpie"                   # curl replacement for APIs
+brew "just"                     # command runner (Makefile alternative)
+
+# ── kubernetes / containers ───────────────────────────────────────────────────
+brew "kubectl"
+brew "helm"
+brew "k9s"                      # terminal Kubernetes UI
+brew "kubectx"                  # fast context/namespace switching (kubectx + kubens)
+
+# ── network / infra ───────────────────────────────────────────────────────────
+brew "nmap"
+brew "mtr"                      # traceroute + ping
+
+# ── macOS only ────────────────────────────────────────────────────────────────
+# These are ignored on Linux (brew skips unknown casks on Linux)
+# if OS.mac?
+#   cask "iterm2"
+#   cask "rectangle"              # window management
+#   cask "karabiner-elements"     # keyboard remapping
+# end

@@ -1,0 +1,97 @@
+# .gitconfig — global git configuration
+# NOTE: name and email are NOT set here — set them per-machine:
+#   git config --global user.name "Your Name"
+#   git config --global user.email "you@example.com"
+# Or use a local ~/.gitconfig.local (included below)
+
+[include]
+  path = ~/.gitconfig.local    # machine-specific overrides (name, email, etc.)
+
+[core]
+  excludesfile = ~/.gitignore_global
+  editor = vim
+  pager = delta               # use delta for diffs (installed via Brewfile)
+  autocrlf = input            # normalize line endings on commit
+  whitespace = fix            # fix trailing whitespace
+
+[init]
+  defaultBranch = main
+
+[pull]
+  rebase = true               # pull --rebase by default
+
+[push]
+  autoSetupRemote = true      # auto set upstream on first push
+
+[merge]
+  conflictstyle = zdiff3      # better conflict markers (git >= 2.35)
+
+[rebase]
+  autoStash = true            # stash before rebase, pop after
+
+[diff]
+  colorMoved = default
+
+[interactive]
+  diffFilter = delta --color-only
+
+[delta]
+  navigate = true             # n/N to move between diff sections
+  light = false
+  side-by-side = true
+  line-numbers = true
+
+[alias]
+  # status
+  st = status -sb
+  s  = status -sb
+
+  # log
+  lg  = log --oneline --graph --decorate --all
+  lp  = log --pretty=format:'%C(yellow)%h%Creset %C(blue)%an%Creset %s %C(green)(%cr)%Creset'
+  last = log -1 HEAD
+
+  # branch
+  br  = branch
+  bra = branch -a
+  bd  = branch -d
+  bD  = branch -D
+
+  # commits
+  c   = commit
+  cm  = commit -m
+  ca  = commit --amend
+  can = commit --amend --no-edit
+
+  # diff
+  d   = diff
+  ds  = diff --staged
+  dw  = diff --word-diff
+
+  # stash
+  sl  = stash list
+  sp  = stash pop
+  ss  = stash save
+
+  # remote
+  f   = fetch --all --prune
+  pl  = pull --rebase
+  ps  = push
+  pso = push -u origin HEAD   # push and set upstream
+
+  # convenience
+  root = rev-parse --show-toplevel
+  aliases = config --get-regexp alias
+
+[color]
+  ui = auto
+
+# ── credential helper (OS-aware) ──────────────────────────────────────────────
+# This is overridden per-machine in ~/.gitconfig.local if needed
+[credential "https://github.com"]
+  helper =
+  helper = !/usr/bin/gh auth git-credential
+
+[credential "https://gist.github.com"]
+  helper =
+  helper = !/usr/bin/gh auth git-credential
