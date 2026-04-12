@@ -19,6 +19,16 @@ error() {
 }
 section() { echo -e "\n${CYAN}══ $* ══${NC}"; }
 
+as_root() {
+  if [[ $(id -u) -eq 0 ]]; then
+    "$@"
+  elif command -v sudo &>/dev/null; then
+    sudo "$@"
+  else
+    error "This step requires root privileges, but sudo is not installed"
+  fi
+}
+
 # ── source helpers ─────────────────────────────────────────────────────────────
 # shellcheck disable=SC1091
 source "$DOTFILES_DIR/scripts/detect_os.sh"
@@ -71,11 +81,17 @@ if [[ "$SHELL" == "$ZSH_PATH" ]]; then
 else
   info "Setting zsh as default shell..."
   if ! grep -qF "$ZSH_PATH" /etc/shells; then
-    echo "$ZSH_PATH" | sudo tee -a /etc/shells
+    if [[ $(id -u) -eq 0 ]]; then
+      echo "$ZSH_PATH" >> /etc/shells
+    elif command -v sudo &>/dev/null; then
+      echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
+    else
+      error "Need root privileges to add $ZSH_PATH to /etc/shells"
+    fi
   fi
   # chsh fails non-interactively on Ubuntu (PAM); usermod is more reliable
   if command -v usermod &>/dev/null; then
-    sudo usermod -s "$ZSH_PATH" "$USER"
+    as_root usermod -s "$ZSH_PATH" "$USER"
   else
     chsh -s "$ZSH_PATH"
   fi

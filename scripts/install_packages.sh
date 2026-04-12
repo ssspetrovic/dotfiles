@@ -8,6 +8,20 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/detect_os.sh"
 
 info() { echo -e "\033[0;32m[packages]\033[0m $*"; }
+error() {
+  echo -e "\033[0;31m[packages]\033[0m $*" >&2
+  exit 1
+}
+
+as_root() {
+  if [[ $(id -u) -eq 0 ]]; then
+    "$@"
+  elif command -v sudo &>/dev/null; then
+    sudo "$@"
+  else
+    error "This step requires root privileges, but sudo is not installed"
+  fi
+}
 
 # ── package lists ─────────────────────────────────────────────────────────────
 # Keep this intentionally minimal — dev tools belong in the Brewfile
@@ -44,15 +58,15 @@ MACOS_EXTRA=() # Handled by xcode-select in bootstrap + Brewfile
 case "$OS" in
   ubuntu)
     info "Updating apt..."
-    sudo apt-get update -qq
+    as_root apt-get update -qq
     info "Installing packages..."
-    sudo apt-get install -y "${COMMON_PACKAGES[@]}" "${UBUNTU_EXTRA[@]}"
+    as_root apt-get install -y "${COMMON_PACKAGES[@]}" "${UBUNTU_EXTRA[@]}"
     ;;
   fedora)
     info "Updating dnf..."
-    sudo dnf check-update -q || true # dnf returns 100 if updates available — not an error
+    as_root dnf check-update -q || true # dnf returns 100 if updates available — not an error
     info "Installing packages..."
-    sudo dnf install -y "${COMMON_PACKAGES[@]}" "${FEDORA_EXTRA[@]}"
+    as_root dnf install -y "${COMMON_PACKAGES[@]}" "${FEDORA_EXTRA[@]}"
     ;;
   macos)
     # On macOS, most of COMMON_PACKAGES come via Homebrew (Brewfile).

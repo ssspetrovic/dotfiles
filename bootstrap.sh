@@ -18,6 +18,16 @@ error() {
   exit 1
 }
 
+as_root() {
+  if [[ $(id -u) -eq 0 ]]; then
+    "$@"
+  elif command -v sudo &>/dev/null; then
+    sudo "$@"
+  else
+    error "This step requires root privileges, but sudo is not installed"
+  fi
+}
+
 # ── detect OS ─────────────────────────────────────────────────────────────────
 detect_os() {
   if [[ "$OSTYPE" == "darwin"* ]]; then
@@ -46,8 +56,11 @@ install_git() {
   fi
   info "Installing git..."
   case "$OS" in
-    ubuntu) sudo apt-get update -qq && sudo apt-get install -y git ;;
-    fedora) sudo dnf install -y git ;;
+    ubuntu)
+      as_root apt-get update -qq
+      as_root apt-get install -y git
+      ;;
+    fedora) as_root dnf install -y git ;;
     macos)
       # xcode-select triggers the git stub which installs CLI tools
       xcode-select --install 2>/dev/null || true
