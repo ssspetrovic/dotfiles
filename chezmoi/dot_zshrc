@@ -46,11 +46,6 @@ zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 
-# ── fzf-tab (better completion UI) ────────────────────────────────────────────
-if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
-  source "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh"
-fi
-
 # ── kubectl completion ────────────────────────────────────────────────────────
 if command -v kubectl &>/dev/null; then
   source <(kubectl completion zsh)
@@ -64,6 +59,11 @@ fi
 # ── docker completion ─────────────────────────────────────────────────────────
 if ! whence -w _docker &>/dev/null && command -v docker &>/dev/null; then
   source <(docker completion zsh)
+fi
+
+# ── fzf-tab (must come after compinit AND all other completion sources) ────────
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
+  source "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh"
 fi
 
 # ── history search fix ────────────────────────────────────────────────────────
