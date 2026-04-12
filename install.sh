@@ -29,6 +29,8 @@ as_root() {
   fi
 }
 
+TARGET_USER="${SUDO_USER:-${USER:-$(id -un)}}"
+
 # ── source helpers ─────────────────────────────────────────────────────────────
 # shellcheck disable=SC1091
 source "$DOTFILES_DIR/scripts/detect_os.sh"
@@ -91,7 +93,7 @@ else
   fi
   # chsh fails non-interactively on Ubuntu (PAM); usermod is more reliable
   if command -v usermod &>/dev/null; then
-    as_root usermod -s "$ZSH_PATH" "$USER"
+    as_root usermod -s "$ZSH_PATH" "$TARGET_USER"
   else
     chsh -s "$ZSH_PATH"
   fi
