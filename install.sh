@@ -47,13 +47,6 @@ source "$DOTFILES_DIR/scripts/detect_os.sh"
 
 section "Detected: $OS / $DISTRO"
 
-# ── authenticate early so sudo/fingerprint prompts don't appear near the end ──
-if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then
-  section "Privilege escalation"
-  info "Authenticating sudo upfront for install steps..."
-  sudo -v
-fi
-
 # ── step 1: core packages via native package manager ──────────────────────────
 section "Core packages"
 bash "$DOTFILES_DIR/scripts/install_packages.sh"
