@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # install.sh — main orchestrator. Run this directly when already cloned.
-# Usage: bash ~/dotfiles/install.sh
+# Usage: bash ~/.dotfiles/install.sh
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -51,9 +51,9 @@ else
   warning "brew not found, skipping Brewfile"
 fi
 
-# ── step 4: symlinks via stow ─────────────────────────────────────────────────
-section "Symlinking dotfiles (stow)"
-bash "$DOTFILES_DIR/scripts/symlink.sh"
+# ── step 4: apply dotfiles via chezmoi ────────────────────────────────────────
+section "Applying dotfiles (chezmoi)"
+bash "$DOTFILES_DIR/scripts/apply_dotfiles.sh"
 
 # ── step 5: OS-specific extras ────────────────────────────────────────────────
 section "OS-specific setup"

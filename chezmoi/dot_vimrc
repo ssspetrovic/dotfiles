@@ -1,0 +1,61 @@
+set nocompatible
+filetype off
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+Plug 'tpope/vim-fugitive'
+Plug 'airblade/vim-gitgutter'
+Plug 'preservim/nerdtree'
+Plug 'itchyny/lightline.vim'
+Plug 'sheerun/vim-polyglot'
+Plug 'jiangmiao/auto-pairs'
+Plug 'tpope/vim-commentary'
+Plug 'Yggdroot/indentLine'
+
+call plug#end()
+
+filetype plugin indent on
+syntax on
+
+set number
+set relativenumber
+set cursorline
+set showcmd
+set wildmenu
+set lazyredraw
+set showmatch
+
+set tabstop=2
+set shiftwidth=2
+set expandtab
+set smartindent
+
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+
+set hidden
+set clipboard=unnamedplus
+set splitbelow
+set splitright
+set updatetime=300
+
+let mapleader=" "
+
+nnoremap <leader>f :Files<CR>
+nnoremap <leader>b :Buffers<CR>
+nnoremap <leader>g :Rg<CR>
+nnoremap <leader>n :NERDTreeToggle<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+colorscheme default
+set background=dark
