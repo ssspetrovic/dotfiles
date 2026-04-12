@@ -64,6 +64,8 @@ fi
 # ── fzf-tab (must come after compinit AND all other completion sources) ────────
 if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh" ]]; then
   source "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh"
+  zstyle ':completion:*:descriptions' format '[%d]'
+  zstyle ':fzf-tab:*' show-group full
 fi
 
 # ── history search fix ────────────────────────────────────────────────────────
