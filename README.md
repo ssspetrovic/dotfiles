@@ -96,11 +96,11 @@ dotfiles/
 │   ├── macos.sh        # macOS defaults
 │   ├── ubuntu.sh       # Ubuntu extras (locale, etc.)
 │   └── fedora.sh       # Fedora extras
-├── scripts/
-│   ├── detect_os.sh    # sets $OS / $DISTRO
-│   ├── apply_dotfiles.sh
-│   ├── install_brew.sh
-│   └── install_packages.sh
+└── scripts/
+    ├── detect_os.sh    # sets $OS / $DISTRO
+    ├── apply_dotfiles.sh
+    ├── install_brew.sh
+    └── install_packages.sh
 ```
 
 ---
@@ -207,4 +207,4 @@ vim -Es -u ~/.vimrc +PlugUpdate +qall
 
 **Locale error on Ubuntu:** Run `sudo locale-gen en_US.UTF-8 && sudo update-locale LANG=en_US.UTF-8` then re-login.
 
-**WSL2 icons look broken:** Install Cascadia Code NF on the Windows side and set it in Windows Terminal settings.
+**Icons look broken:** Install one of the Nerd Fonts (NF) and use set it as the main font in your terminal of choice.
