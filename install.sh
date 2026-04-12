@@ -95,7 +95,7 @@ else
   info "Setting zsh as default shell..."
   if ! grep -qF "$ZSH_PATH" /etc/shells; then
     if [[ $(id -u) -eq 0 ]]; then
-      echo "$ZSH_PATH" >> /etc/shells
+      echo "$ZSH_PATH" >>/etc/shells
     elif command -v sudo &>/dev/null; then
       echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
     else
