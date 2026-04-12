@@ -10,6 +10,7 @@ brew "zsh"                      # latest zsh (older on some distros/macOS)
 brew "tmux"
 brew "chezmoi"                  # dotfile manager
 brew "pure"                     # minimal, fast zsh prompt
+brew "fzf-tab"                  # fzf-powered zsh completion UI
 brew "zsh-autosuggestions"      # fish-like autosuggestions
 brew "zsh-syntax-highlighting"  # fish-like syntax highlighting
 brew "zoxide"                   # smarter cd

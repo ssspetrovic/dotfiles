@@ -33,6 +33,10 @@ if [[ -n "$BREW_PREFIX" && -d "$BREW_PREFIX/share/zsh/site-functions" ]]; then
   fpath+=("$BREW_PREFIX/share/zsh/site-functions")
 fi
 
+if [[ -d /usr/share/zsh/vendor-completions ]]; then
+  fpath+=(/usr/share/zsh/vendor-completions)
+fi
+
 # Fix insecure completion dirs silently (common on brew systems)
 zstyle ':completion:*' rehash true
 compinit -d "$HOME/.zcompdump"
@@ -58,8 +62,8 @@ if command -v helm &>/dev/null; then
 fi
 
 # ── docker completion ─────────────────────────────────────────────────────────
-if [[ -f /usr/share/zsh/vendor-completions/_docker ]]; then
-  fpath+=(/usr/share/zsh/vendor-completions)
+if ! whence -w _docker &>/dev/null && command -v docker &>/dev/null; then
+  source <(docker completion zsh)
 fi
 
 # ── history search fix ────────────────────────────────────────────────────────
