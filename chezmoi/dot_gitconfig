@@ -90,8 +90,8 @@
 # This is overridden per-machine in ~/.gitconfig.local if needed
 [credential "https://github.com"]
   helper =
-  helper = !/usr/bin/gh auth git-credential
+  helper = !gh auth git-credential
 
 [credential "https://gist.github.com"]
   helper =
-  helper = !/usr/bin/gh auth git-credential
+  helper = !gh auth git-credential

@@ -19,9 +19,19 @@ setopt CORRECT                # correct typos in commands
 setopt NO_CASE_GLOB           # case-insensitive globbing
 setopt GLOB_COMPLETE          # don't insert first match; show completion menu
 setopt EXTENDED_GLOB
+setopt INTERACTIVE_COMMENTS   # allow pasted '#' comment lines in interactive shells
 
 # ── completion ────────────────────────────────────────────────────────────────
 autoload -Uz compinit
+
+BREW_PREFIX="${HOMEBREW_PREFIX:-}"
+if [[ -z "$BREW_PREFIX" ]] && command -v brew &>/dev/null; then
+  BREW_PREFIX="$(brew --prefix 2>/dev/null)"
+fi
+
+if [[ -n "$BREW_PREFIX" && -d "$BREW_PREFIX/share/zsh/site-functions" ]]; then
+  fpath+=("$BREW_PREFIX/share/zsh/site-functions")
+fi
 
 # Fix insecure completion dirs silently (common on brew systems)
 zstyle ':completion:*' rehash true
@@ -33,8 +43,8 @@ zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:descriptions' format '%F{yellow}-- %d --%f'
 
 # ── fzf-tab (better completion UI) ────────────────────────────────────────────
-if [[ -f "$(brew --prefix 2>/dev/null)/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
-  source "$(brew --prefix)/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh"
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
+  source "$BREW_PREFIX/opt/fzf-tab/share/fzf-tab/fzf-tab.plugin.zsh"
 fi
 
 # ── kubectl completion ────────────────────────────────────────────────────────
@@ -124,23 +134,19 @@ if command -v mise &>/dev/null; then
 fi
 
 # ── zsh-autosuggestions ───────────────────────────────────────────────────────
-if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
-  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
   ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE='fg=8'
   ZSH_AUTOSUGGEST_STRATEGY=(history completion)
   bindkey '^]' autosuggest-accept
 fi
 
 # ── zsh-syntax-highlighting ───────────────────────────────────────────────────
-if [[ -f "$(brew --prefix 2>/dev/null)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-  source "$(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
+  source "$BREW_PREFIX/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
 fi
 
 # ── pure prompt ───────────────────────────────────────────────────────────────
-if [[ -d "$HOME/.zsh/pure" ]]; then
-  fpath+=("$HOME/.zsh/pure")
-fi
-
 if autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null; then
   zstyle ':prompt:pure:git:stash' show yes
   prompt pure

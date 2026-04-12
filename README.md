@@ -38,7 +38,7 @@ bash scripts/apply_dotfiles.sh
 ## What Gets Installed
 
 ### Native package manager (apt / dnf / xcode-select)
-Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, `build-essential`
+Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, plus the platform compiler toolchain (`build-essential` on Ubuntu/Debian; `gcc`/`make` on Fedora).
 
 ### Homebrew (all platforms)
 Dev tooling via `brew/Brewfile`. Highlights:
@@ -61,6 +61,8 @@ Dev tooling via `brew/Brewfile`. Highlights:
 | `k9s`         | Terminal Kubernetes UI                                |
 | `btop`        | Modern top                                            |
 | `fastfetch`   | Display OS logo and PC specs                          |
+
+`chezmoi` is also installed via the Brewfile and is used by `install.sh` / `scripts/apply_dotfiles.sh` to manage the dotfiles themselves.
 
 ### dotfiles (via chezmoi)
 
@@ -98,8 +100,7 @@ dotfiles/
 │   ├── detect_os.sh    # sets $OS / $DISTRO
 │   ├── apply_dotfiles.sh
 │   ├── install_brew.sh
-│   ├── install_packages.sh
-│   └── symlink.sh      # compatibility wrapper to apply_dotfiles.sh
+│   └── install_packages.sh
 ```
 
 ---
