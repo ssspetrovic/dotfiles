@@ -3,7 +3,7 @@ alias ll='eza -lah --icons --git'
 alias la='eza -a --icons'
 alias lt='eza --tree --icons'
 
-alias cat='bat'
+# alias cat='bat'
 
 alias v='vim'
 alias vi='vim'
