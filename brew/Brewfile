@@ -1,5 +1,5 @@
 # Brewfile — managed by `brew bundle`
-# Run: brew bundle --file=~/dotfiles/brew/Brewfile
+# Run: brew bundle --file=~/.dotfiles/brew/Brewfile
 # Add new tools here; run `brew bundle` to apply.
 
 # ── taps ──────────────────────────────────────────────────────────────────────
@@ -8,6 +8,7 @@
 # ── shell & terminal ──────────────────────────────────────────────────────────
 brew "zsh"                      # latest zsh (older on some distros/macOS)
 brew "tmux"
+brew "chezmoi"                  # dotfile manager
 brew "pure"                     # minimal, fast zsh prompt
 brew "zsh-autosuggestions"      # fish-like autosuggestions
 brew "zsh-syntax-highlighting"  # fish-like syntax highlighting

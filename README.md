@@ -2,7 +2,7 @@
 
 Personal development environment for Ubuntu / Fedora / macOS.
 
-**Stack:** zsh · vim · tmux · pure · GNU stow · Homebrew
+**Stack:** zsh · vim · tmux · pure · chezmoi · Homebrew
 
 ---
 
@@ -11,26 +11,26 @@ Personal development environment for Ubuntu / Fedora / macOS.
 ### Fresh machine (curl bootstrap)
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ssspetrovic/dotfiles/master/bootstrap.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ssspetrovic/dotfiles/main/bootstrap.sh | bash
 ```
 
 This will:
 1. Install `git` via the native package manager if missing
-2. Clone this repo to `~/dotfiles`
+2. Clone this repo to `~/.dotfiles`
 3. Run `install.sh` — which handles everything including plugins
 
 ### Already cloned
 
 ```bash
-cd ~/dotfiles
+cd ~/.dotfiles
 bash install.sh
 ```
 
 ### Just the dotfiles (no package installs)
 
 ```bash
-cd ~/dotfiles
-bash scripts/symlink.sh
+cd ~/.dotfiles
+bash scripts/apply_dotfiles.sh
 ```
 
 ---
@@ -38,7 +38,7 @@ bash scripts/symlink.sh
 ## What Gets Installed
 
 ### Native package manager (apt / dnf / xcode-select)
-Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, `stow`, `build-essential`
+Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, `build-essential`
 
 ### Homebrew (all platforms)
 Dev tooling via `brew/Brewfile`. Highlights:
@@ -62,14 +62,14 @@ Dev tooling via `brew/Brewfile`. Highlights:
 | `btop`        | Modern top                                            |
 | `fastfetch`   | Display OS logo and PC specs                          |
 
-### dotfiles (via GNU stow)
+### dotfiles (via chezmoi)
 
-| Package | Links                                                         |
-| ------- | ------------------------------------------------------------- |
-| `zsh`   | `~/.zshrc`, `~/.zshenv`, `~/.aliases.zsh`, `~/.functions.zsh` |
-| `vim`   | `~/.vimrc`                                                    |
-| `tmux`  | `~/.tmux.conf`                                                |
-| `git`   | `~/.gitconfig`, `~/.gitignore_global`                         |
+| Target | Managed files                                                 |
+| ------ | ------------------------------------------------------------- |
+| `zsh`  | `~/.zshrc`, `~/.zshenv`, `~/.aliases.zsh`, `~/.functions.zsh` |
+| `vim`  | `~/.vimrc`                                                    |
+| `tmux` | `~/.tmux.conf`                                                |
+| `git`  | `~/.gitconfig`, `~/.gitignore_global`                         |
 
 ---
 
@@ -81,27 +81,25 @@ dotfiles/
 ├── install.sh          # main orchestrator (runs all steps including plugins)
 ├── brew/
 │   └── Brewfile        # all Homebrew packages
-├── git/
-│   ├── .gitconfig
-│   └── .gitignore_global
+├── chezmoi/            # chezmoi source state for files under $HOME
+│   ├── dot_aliases.zsh
+│   ├── dot_functions.zsh
+│   ├── dot_gitconfig
+│   ├── dot_gitignore_global
+│   ├── dot_tmux.conf
+│   ├── dot_vimrc
+│   ├── dot_zshenv
+│   └── dot_zshrc
 ├── os/
 │   ├── macos.sh        # macOS defaults
 │   ├── ubuntu.sh       # Ubuntu extras (locale, etc.)
 │   └── fedora.sh       # Fedora extras
 ├── scripts/
 │   ├── detect_os.sh    # sets $OS / $DISTRO
+│   ├── apply_dotfiles.sh
 │   ├── install_brew.sh
 │   ├── install_packages.sh
-│   └── symlink.sh      # runs stow
-├── tmux/
-│   └── .tmux.conf
-├── vim/
-│   └── .vimrc
-└── zsh/
-    ├── .zshrc
-    ├── .zshenv
-    ├── .aliases.zsh
-    └── .functions.zsh
+│   └── symlink.sh      # compatibility wrapper to apply_dotfiles.sh
 ```
 
 ---
@@ -131,34 +129,30 @@ Add a `~/.zshrc.local` for anything machine-specific. It is sourced at the end o
 
 ## Adding a New Tool
 
-1. Create the stow package directory mirroring `$HOME`:
+1. Create the chezmoi source entry mirroring the target path in `$HOME`:
    ```
-   newtool/
-   └── .config/
-       └── newtool/
-           └── config.toml
+   chezmoi/dot_config/newtool/config.toml
    ```
-2. Add `newtool` to `STOW_PACKAGES` in `scripts/symlink.sh`
-3. Run `bash scripts/symlink.sh` to apply
+2. Run `bash scripts/apply_dotfiles.sh` to apply
 
 ---
 
 ## Updating
 
 ```bash
-cd ~/dotfiles
+cd ~/.dotfiles
 git pull
 bash install.sh        # re-runs everything idempotently
 ```
 
-Or just re-stow dotfiles:
+Or just apply dotfiles:
 ```bash
-bash scripts/symlink.sh
+bash scripts/apply_dotfiles.sh
 ```
 
 Or update brew packages:
 ```bash
-brew bundle --file=~/dotfiles/brew/Brewfile
+brew bundle --file=~/.dotfiles/brew/Brewfile
 ```
 
 Or update vim/tmux plugins manually:
@@ -206,7 +200,7 @@ vim -Es -u ~/.vimrc +PlugUpdate +qall
 
 ## Troubleshooting
 
-**stow conflicts:** If `symlink.sh` fails with a conflict, check for existing non-symlinked files. The script backs them up as `.bak.TIMESTAMP` automatically.
+**chezmoi conflicts:** `scripts/apply_dotfiles.sh` runs `chezmoi apply --less-interactive`, so chezmoi will prompt before overwriting pre-existing targets or files changed since the last apply. Use `chezmoi diff --source ~/.dotfiles/chezmoi` to inspect the pending changes first.
 
 **brew not found after install:** Run `exec zsh` or open a new terminal to pick up the updated PATH from `.zshenv`.
 

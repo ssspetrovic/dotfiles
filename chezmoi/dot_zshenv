@@ -1,0 +1,18 @@
+export EDITOR="vim"
+export VISUAL="vim"
+export PAGER="less"
+
+# Homebrew (Apple Silicon macOS)
+if [[ -x /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
+
+# Homebrew (Intel macOS)
+if [[ -x /usr/local/bin/brew ]]; then
+  eval "$(/usr/local/bin/brew shellenv)"
+fi
+
+# Homebrew (Linux)
+if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
+  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+fi

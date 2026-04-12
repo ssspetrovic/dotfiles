@@ -18,7 +18,6 @@ COMMON_PACKAGES=(
   zsh
   vim
   tmux
-  stow # GNU stow for symlinking
   unzip
   tree
   htop
