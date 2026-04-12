@@ -43,24 +43,24 @@ Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, plus the pl
 ### Homebrew (all platforms)
 Dev tooling via `brew/Brewfile`. Highlights:
 
-| Tool          | Purpose                                               |
-| ------------- | ----------------------------------------------------- |
-| `pure`        | Minimal zsh prompt                                    |
-| `zoxide`      | Smarter `cd`                                          |
-| `eza`         | Modern `ls`                                           |
-| `bat`         | `cat` with syntax highlighting                        |
-| `ripgrep`     | Fast `grep`                                           |
-| `fd`          | Fast `find`                                           |
-| `fzf`         | Fuzzy finder                                          |
-| `delta`       | Better git diffs                                      |
-| `mise`        | Runtime version manager (replaces nvm/pyenv/rbenv)    |
-| `lazygit`     | Terminal git UI                                       |
-| `gh`          | GitHub CLI                                            |
-| `kubectl`     | Kubernetes CLI                                        |
-| `helm`        | Kubernetes package manager                            |
-| `k9s`         | Terminal Kubernetes UI                                |
-| `btop`        | Modern top                                            |
-| `fastfetch`   | Display OS logo and PC specs                          |
+| Tool        | Purpose                                            |
+| ----------- | -------------------------------------------------- |
+| `pure`      | Minimal zsh prompt                                 |
+| `zoxide`    | Smarter `cd`                                       |
+| `eza`       | Modern `ls`                                        |
+| `bat`       | `cat` with syntax highlighting                     |
+| `ripgrep`   | Fast `grep`                                        |
+| `fd`        | Fast `find`                                        |
+| `fzf`       | Fuzzy finder                                       |
+| `delta`     | Better git diffs                                   |
+| `mise`      | Runtime version manager (replaces nvm/pyenv/rbenv) |
+| `lazygit`   | Terminal git UI                                    |
+| `gh`        | GitHub CLI                                         |
+| `kubectl`   | Kubernetes CLI                                     |
+| `helm`      | Kubernetes package manager                         |
+| `k9s`       | Terminal Kubernetes UI                             |
+| `btop`      | Modern top                                         |
+| `fastfetch` | Display OS logo and PC specs                       |
 
 `chezmoi` is also installed via the Brewfile and is used by `install.sh` / `scripts/apply_dotfiles.sh` to manage the dotfiles themselves.
 
