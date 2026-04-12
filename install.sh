@@ -31,11 +31,28 @@ as_root() {
 
 TARGET_USER="${SUDO_USER:-${USER:-$(id -un)}}"
 
+get_login_shell() {
+  if command -v getent &>/dev/null; then
+    getent passwd "$TARGET_USER" | cut -d: -f7
+  elif [[ "$OS" == "macos" ]] && command -v dscl &>/dev/null; then
+    dscl . -read "/Users/$TARGET_USER" UserShell | awk '{print $2}'
+  else
+    printf '%s\n' "${SHELL:-}"
+  fi
+}
+
 # ── source helpers ─────────────────────────────────────────────────────────────
 # shellcheck disable=SC1091
 source "$DOTFILES_DIR/scripts/detect_os.sh"
 
 section "Detected: $OS / $DISTRO"
+
+# ── authenticate early so sudo/fingerprint prompts don't appear near the end ──
+if [[ $(id -u) -ne 0 ]] && command -v sudo &>/dev/null; then
+  section "Privilege escalation"
+  info "Authenticating sudo upfront for install steps..."
+  sudo -v
+fi
 
 # ── step 1: core packages via native package manager ──────────────────────────
 section "Core packages"
@@ -78,7 +95,8 @@ esac
 # ── step 6: set default shell to zsh ──────────────────────────────────────────
 section "Default shell"
 ZSH_PATH="$(command -v zsh)"
-if [[ "$SHELL" == "$ZSH_PATH" ]]; then
+CURRENT_LOGIN_SHELL="$(get_login_shell)"
+if [[ "$CURRENT_LOGIN_SHELL" == "$ZSH_PATH" ]]; then
   info "zsh is already the default shell"
 else
   info "Setting zsh as default shell..."
@@ -103,13 +121,33 @@ fi
 # ── step 7: vim plugins ───────────────────────────────────────────────────────
 section "Vim plugins"
 if command -v vim &>/dev/null; then
-  if [[ ! -d "$HOME/.vim/plugged" ]]; then
-    info "Installing vim plugins headlessly..."
-    vim -Es -u "$HOME/.vimrc" +PlugInstall +qall 2>/dev/null
-    info "Vim plugins installed"
+  VIM_PLUG_PATH="$HOME/.vim/autoload/plug.vim"
+
+  if [[ ! -f "$VIM_PLUG_PATH" ]]; then
+    info "Installing vim-plug..."
+    if command -v curl &>/dev/null; then
+      curl -fLo "$VIM_PLUG_PATH" --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    elif command -v wget &>/dev/null; then
+      mkdir -p "$(dirname "$VIM_PLUG_PATH")"
+      wget -O "$VIM_PLUG_PATH" \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+    else
+      warning "Neither curl nor wget found; skipping vim-plug install"
+    fi
+  fi
+
+  if [[ -f "$VIM_PLUG_PATH" ]]; then
+    if [[ ! -d "$HOME/.vim/plugged" ]]; then
+      info "Installing vim plugins headlessly..."
+      vim -Es -u "$HOME/.vimrc" +PlugInstall +qall 2>/dev/null
+      info "Vim plugins installed"
+    else
+      info "Vim plugins already installed, updating..."
+      vim -Es -u "$HOME/.vimrc" +PlugUpdate +qall 2>/dev/null
+    fi
   else
-    info "Vim plugins already installed, updating..."
-    vim -Es -u "$HOME/.vimrc" +PlugUpdate +qall 2>/dev/null
+    warning "vim-plug not available, skipping plugin install"
   fi
 else
   warning "vim not found, skipping plugin install"
