@@ -62,8 +62,8 @@ if ! whence -w _docker &>/dev/null && command -v docker &>/dev/null; then
 fi
 
 # ── fzf-tab (must come after compinit AND all other completion sources) ────────
-if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/fzf-tab/fzf-tab.plugin.zsh" ]]; then
-  source "$BREW_PREFIX/share/fzf-tab/fzf-tab.plugin.zsh"
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh" ]]; then
+  source "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh"
 fi
 
 # ── history search fix ────────────────────────────────────────────────────────
