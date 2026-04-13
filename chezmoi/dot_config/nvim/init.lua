@@ -30,11 +30,12 @@ vim.g.mapleader = " "
 -- lazy.nvim bootstrap
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
-if not vim.loop.fs_stat(lazypath) then
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
   vim.fn.system({
     "git",
     "clone",
     "--filter=blob:none",
+    "--branch=stable",
     "https://github.com/folke/lazy.nvim.git",
     lazypath,
   })
@@ -57,6 +58,7 @@ require("lazy").setup({
 
   {
     "nvim-tree/nvim-tree.lua",
+    dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("nvim-tree").setup()
       vim.keymap.set("n", "<leader>n", ":NvimTreeToggle<CR>")
@@ -111,11 +113,6 @@ require("lazy").setup({
 })
 
 -- keymaps
-vim.keymap.set("n", "<leader>f", require("telescope.builtin").find_files)
-vim.keymap.set("n", "<leader>b", require("telescope.builtin").buffers)
-vim.keymap.set("n", "<leader>g", require("telescope.builtin").live_grep)
-
-vim.keymap.set("n", "<leader>n", ":NvimTreeToggle<CR>")
 vim.keymap.set("n", "<leader>w", ":w<CR>")
 vim.keymap.set("n", "<leader>q", ":q<CR>")
 
