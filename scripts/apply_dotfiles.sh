@@ -37,5 +37,5 @@ fi
 
 # ── apply dotfiles ────────────────────────────────────────────────────────────
 info "Applying dotfiles"
-chezmoi apply --force --progress
+chezmoi apply --force
 info "Dotfiles applied"
