@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# apply_dotfiles.sh — apply dotfiles with chezmoi from this repo's source dir.
+# apply_dotfiles.sh — apply dotfiles with chezmoi (standard workflow)
 set -euo pipefail
 
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -22,6 +22,20 @@ if [[ ! -d "$CHEZMOI_SOURCE_DIR" ]]; then
   error "chezmoi source directory not found: $CHEZMOI_SOURCE_DIR"
 fi
 
-info "Applying dotfiles from $CHEZMOI_SOURCE_DIR"
-chezmoi apply --source="$CHEZMOI_SOURCE_DIR" --less-interactive "$@"
+# ── initialize chezmoi if needed ──────────────────────────────────────────────
+CURRENT_SOURCE="$(chezmoi source-path 2>/dev/null || true)"
+
+if [[ -z "$CURRENT_SOURCE" ]]; then
+  info "Initializing chezmoi with source: $CHEZMOI_SOURCE_DIR"
+  chezmoi init --source="$CHEZMOI_SOURCE_DIR"
+elif [[ "$CURRENT_SOURCE" != "$CHEZMOI_SOURCE_DIR" ]]; then
+  info "Re-initializing chezmoi with new source: $CHEZMOI_SOURCE_DIR"
+  chezmoi init --force --source="$CHEZMOI_SOURCE_DIR"
+else
+  info "chezmoi already initialized with correct source"
+fi
+
+# ── apply dotfiles ────────────────────────────────────────────────────────────
+info "Applying dotfiles"
+chezmoi apply --force
 info "Dotfiles applied"
