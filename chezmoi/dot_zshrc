@@ -41,6 +41,9 @@ fi
 zstyle ':completion:*' rehash true
 compinit -i -d "$HOME/.zcompdump"
 
+# eza's completion can break ordinary path completion for the ls aliases.
+compdef _ls eza
+
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
@@ -59,13 +62,6 @@ fi
 # ── docker completion ─────────────────────────────────────────────────────────
 if ! whence -w _docker &>/dev/null && command -v docker &>/dev/null; then
   source <(docker completion zsh)
-fi
-
-# ── fzf-tab (must come after compinit AND all other completion sources) ────────
-if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh" ]]; then
-  source "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh"
-  zstyle ':completion:*:descriptions' format '[%d]'
-  zstyle ':fzf-tab:*' show-group full
 fi
 
 # ── history search fix ────────────────────────────────────────────────────────
@@ -122,12 +118,17 @@ if command -v fzf &>/dev/null; then
   export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
   export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
   export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
-  # restore bindings after fzf overrides them
+  # restore history bindings after fzf sets its widgets
   bindkey '^[[A' up-line-or-beginning-search
   bindkey '^[[B' down-line-or-beginning-search
-  if (( ${+widgets[fzf-tab-complete]} )); then
-    bindkey '^I' fzf-tab-complete
-  fi
+fi
+
+# ── fzf-tab (must come after compinit and fzf, before autosuggestions) ───────
+if [[ -n "$BREW_PREFIX" && -f "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh" ]]; then
+  zstyle ':completion:*:descriptions' format '[%d]'
+  zstyle ':completion:*' menu no
+  source "$BREW_PREFIX/share/fzf-tab/fzf-tab.zsh"
+  zstyle ':fzf-tab:*' show-group full
 fi
 
 # ── zoxide ────────────────────────────────────────────────────────────────────
