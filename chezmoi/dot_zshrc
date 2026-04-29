@@ -8,7 +8,7 @@ HISTFILE="$HOME/.zsh_history"
 HISTSIZE=100000
 SAVEHIST=100000
 setopt HIST_IGNORE_DUPS       # don't record duplicates
-setopt HIST_IGNORE_SPACE      # don't record lines starting with space
+# setopt HIST_IGNORE_SPACE      # don't record lines starting with space
 setopt HIST_VERIFY            # show before executing history expansion
 setopt SHARE_HISTORY          # share history across sessions
 setopt EXTENDED_HISTORY       # save timestamp + duration
@@ -37,9 +37,9 @@ if [[ -d /usr/share/zsh/vendor-completions ]]; then
   fpath+=(/usr/share/zsh/vendor-completions)
 fi
 
-# Fix insecure completion dirs silently (common on brew systems)
+# Ignore insecure completion dirs silently (common on brew systems)
 zstyle ':completion:*' rehash true
-compinit -d "$HOME/.zcompdump"
+compinit -i -d "$HOME/.zcompdump"
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
@@ -125,7 +125,9 @@ if command -v fzf &>/dev/null; then
   # restore bindings after fzf overrides them
   bindkey '^[[A' up-line-or-beginning-search
   bindkey '^[[B' down-line-or-beginning-search
-  bindkey '^I' fzf-tab-complete
+  if (( ${+widgets[fzf-tab-complete]} )); then
+    bindkey '^I' fzf-tab-complete
+  fi
 fi
 
 # ── zoxide ────────────────────────────────────────────────────────────────────
