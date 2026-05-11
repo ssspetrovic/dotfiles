@@ -2,17 +2,19 @@ export EDITOR="vim"
 export VISUAL="vim"
 export PAGER="less"
 
-# Homebrew (Apple Silicon macOS)
-if [[ -x /opt/homebrew/bin/brew ]]; then
-  eval "$(/opt/homebrew/bin/brew shellenv)"
-fi
-
-# Homebrew (Intel macOS)
-if [[ -x /usr/local/bin/brew ]]; then
-  eval "$(/usr/local/bin/brew shellenv)"
-fi
-
-# Homebrew (Linux)
-if [[ -x /home/linuxbrew/.linuxbrew/bin/brew ]]; then
-  eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+# Homebrew across macOS, Linuxbrew's shared prefix, and user-local Linuxbrew.
+if (( ${+commands[brew]} )); then
+  eval "$(brew shellenv)"
+else
+  for brew_bin in \
+    /opt/homebrew/bin/brew \
+    /usr/local/bin/brew \
+    /home/linuxbrew/.linuxbrew/bin/brew \
+    "$HOME/.linuxbrew/bin/brew"; do
+    if [[ -x "$brew_bin" ]]; then
+      eval "$("$brew_bin" shellenv)"
+      break
+    fi
+  done
+  unset brew_bin
 fi

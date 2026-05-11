@@ -1,24 +1,37 @@
 mkcd() {
-  mkdir -p "$1" && cd "$1"
+  if [[ $# -ne 1 ]]; then
+    echo "usage: mkcd <directory>" >&2
+    return 2
+  fi
+
+  local directory="$1"
+  mkdir -p "$directory" && cd "$directory"
 }
 
 extract() {
-  if [[ -f "$1" ]]; then
-    case "$1" in
-      *.tar.bz2) tar xjf "$1" ;;
-      *.tar.gz) tar xzf "$1" ;;
-      *.bz2) bunzip2 "$1" ;;
-      *.rar) unrar x "$1" ;;
-      *.gz) gunzip "$1" ;;
-      *.tar) tar xf "$1" ;;
-      *.tbz2) tar xjf "$1" ;;
-      *.tgz) tar xzf "$1" ;;
-      *.zip) unzip "$1" ;;
-      *.Z) uncompress "$1" ;;
-      *.7z) 7z x "$1" ;;
-      *) echo "cannot extract '$1'" ;;
-    esac
-  else
-    echo "'$1' is not a valid file"
+  if [[ $# -ne 1 ]]; then
+    echo "usage: extract <archive>" >&2
+    return 2
   fi
+
+  local archive="$1"
+  if [[ ! -f "$archive" ]]; then
+    echo "'$archive' is not a valid file" >&2
+    return
+  fi
+
+  case "$archive" in
+    *.tar.bz2) tar xjf "$archive" ;;
+    *.tar.gz) tar xzf "$archive" ;;
+    *.bz2) bunzip2 "$archive" ;;
+    *.rar) unrar x "$archive" ;;
+    *.gz) gunzip "$archive" ;;
+    *.tar) tar xf "$archive" ;;
+    *.tbz2) tar xjf "$archive" ;;
+    *.tgz) tar xzf "$archive" ;;
+    *.zip) unzip "$archive" ;;
+    *.Z) uncompress "$archive" ;;
+    *.7z) 7z x "$archive" ;;
+    *) echo "cannot extract '$archive'" >&2 ;;
+  esac
 }

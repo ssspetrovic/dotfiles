@@ -23,6 +23,19 @@ as_root() {
   fi
 }
 
+wait_for_xcode_cli_tools() {
+  local max_wait_seconds="${1:-600}"
+  local waited=0
+
+  while ! xcode-select -p &>/dev/null; do
+    if (( waited >= max_wait_seconds )); then
+      error "Xcode Command Line Tools did not finish within ${max_wait_seconds}s; complete the install manually and re-run install.sh"
+    fi
+    sleep 5
+    waited=$((waited + 5))
+  done
+}
+
 # ── package lists ─────────────────────────────────────────────────────────────
 # Keep this intentionally minimal — dev tools belong in the Brewfile
 COMMON_PACKAGES=(
@@ -52,7 +65,17 @@ FEDORA_EXTRA=(
   gnupg2
 )
 
-MACOS_EXTRA=() # Handled by xcode-select in bootstrap + Brewfile
+ARCH_EXTRA=(
+  base-devel
+  ca-certificates
+  gnupg
+)
+
+OPENSUSE_EXTRA=(
+  patterns-devel-base-devel_basis
+  ca-certificates
+  gpg2
+)
 
 # ── install ───────────────────────────────────────────────────────────────────
 case "$OS" in
@@ -68,13 +91,23 @@ case "$OS" in
     info "Installing packages..."
     as_root dnf install -y "${COMMON_PACKAGES[@]}" "${FEDORA_EXTRA[@]}"
     ;;
+  arch)
+    info "Updating pacman and installing packages..."
+    as_root pacman -Syu --needed --noconfirm "${COMMON_PACKAGES[@]}" "${ARCH_EXTRA[@]}"
+    ;;
+  opensuse)
+    info "Refreshing zypper..."
+    as_root zypper --non-interactive refresh
+    info "Installing packages..."
+    as_root zypper --non-interactive install --no-recommends "${COMMON_PACKAGES[@]}" "${OPENSUSE_EXTRA[@]}"
+    ;;
   macos)
     # On macOS, most of COMMON_PACKAGES come via Homebrew (Brewfile).
     # We only ensure xcode CLI tools are present here.
     if ! xcode-select -p &>/dev/null; then
       info "Installing Xcode Command Line Tools..."
       xcode-select --install
-      until xcode-select -p &>/dev/null; do sleep 5; done
+      wait_for_xcode_cli_tools
     else
       info "Xcode CLI tools already installed"
     fi

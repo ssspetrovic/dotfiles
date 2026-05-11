@@ -42,7 +42,9 @@ zstyle ':completion:*' rehash true
 compinit -i -d "$HOME/.zcompdump"
 
 # eza's completion can break ordinary path completion for the ls aliases.
-compdef _ls eza
+if command -v eza &>/dev/null && whence -w _ls &>/dev/null; then
+  compdef _ls eza
+fi
 
 zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}'
@@ -64,39 +66,41 @@ if ! whence -w _docker &>/dev/null && command -v docker &>/dev/null; then
   source <(docker completion zsh)
 fi
 
-# ── history search fix ────────────────────────────────────────────────────────
-autoload -Uz up-line-or-beginning-search
-autoload -Uz down-line-or-beginning-search
-zle -N up-line-or-beginning-search
-zle -N down-line-or-beginning-search
+if [[ -o zle && -t 0 && -t 1 ]]; then
+  # ── history search fix ──────────────────────────────────────────────────────
+  autoload -Uz up-line-or-beginning-search
+  autoload -Uz down-line-or-beginning-search
+  zle -N up-line-or-beginning-search
+  zle -N down-line-or-beginning-search
 
-# ── key bindings ──────────────────────────────────────────────────────────────
-bindkey -e
-bindkey '^[[A' up-line-or-beginning-search   # Up arrow
-bindkey '^[[B' down-line-or-beginning-search # Down arrow
-bindkey '^[[H' beginning-of-line         # home
-bindkey '^[[F' end-of-line               # end
-bindkey '^[[3~' delete-char              # delete
-bindkey '^[[1;5C' forward-word           # Ctrl+right
-bindkey '^[[1;5D' backward-word          # Ctrl+left
+  # ── key bindings ────────────────────────────────────────────────────────────
+  bindkey -e
+  bindkey '^[[A' up-line-or-beginning-search   # Up arrow
+  bindkey '^[[B' down-line-or-beginning-search # Down arrow
+  bindkey '^[[H' beginning-of-line         # home
+  bindkey '^[[F' end-of-line               # end
+  bindkey '^[[3~' delete-char              # delete
+  bindkey '^[[1;5C' forward-word           # Ctrl+right
+  bindkey '^[[1;5D' backward-word          # Ctrl+left
 
-# ── sudo widget (Esc Esc) ─────────────────────────────────────────────────────
-_sudo_command_line() {
-  [[ -z $BUFFER ]] && zle up-history
-  if [[ $BUFFER == sudo\ * ]]; then
-    LBUFFER="${LBUFFER#sudo }"
-  elif [[ $BUFFER == $EDITOR\ * ]]; then
-    LBUFFER="${LBUFFER#$EDITOR }"
-    LBUFFER="sudoedit $LBUFFER"
-  elif [[ $BUFFER == sudoedit\ * ]]; then
-    LBUFFER="${LBUFFER#sudoedit }"
-    LBUFFER="$EDITOR $LBUFFER"
-  else
-    LBUFFER="sudo $LBUFFER"
-  fi
-}
-zle -N _sudo_command_line
-bindkey '\e\e' _sudo_command_line
+  # ── sudo widget (Esc Esc) ───────────────────────────────────────────────────
+  _sudo_command_line() {
+    [[ -z $BUFFER ]] && zle up-history
+    if [[ $BUFFER == sudo\ * ]]; then
+      LBUFFER="${LBUFFER#sudo }"
+    elif [[ $BUFFER == $EDITOR\ * ]]; then
+      LBUFFER="${LBUFFER#$EDITOR }"
+      LBUFFER="sudoedit $LBUFFER"
+    elif [[ $BUFFER == sudoedit\ * ]]; then
+      LBUFFER="${LBUFFER#sudoedit }"
+      LBUFFER="$EDITOR $LBUFFER"
+    else
+      LBUFFER="sudo $LBUFFER"
+    fi
+  }
+  zle -N _sudo_command_line
+  bindkey '\e\e' _sudo_command_line
+fi
 
 # ── colored man pages ─────────────────────────────────────────────────────────
 export LESS_TERMCAP_mb=$'\e[1;32m'
@@ -114,13 +118,19 @@ export MANPAGER="less -R"
 
 # ── fzf ───────────────────────────────────────────────────────────────────────
 if command -v fzf &>/dev/null; then
-  source <(fzf --zsh)
-  export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-  export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  if [[ -o zle && -t 0 && -t 1 ]] && fzf --zsh &>/dev/null; then
+    source <(fzf --zsh)
+  fi
+  if command -v fd &>/dev/null; then
+    export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+    export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+  fi
   export FZF_DEFAULT_OPTS='--height 40% --layout=reverse --border'
   # restore history bindings after fzf sets its widgets
-  bindkey '^[[A' up-line-or-beginning-search
-  bindkey '^[[B' down-line-or-beginning-search
+  if [[ -o zle && -t 0 && -t 1 ]]; then
+    bindkey '^[[A' up-line-or-beginning-search
+    bindkey '^[[B' down-line-or-beginning-search
+  fi
 fi
 
 # ── fzf-tab (must come after compinit and fzf, before autosuggestions) ───────
@@ -161,8 +171,10 @@ fi
 
 # ── pure prompt ───────────────────────────────────────────────────────────────
 if autoload -Uz promptinit 2>/dev/null && promptinit 2>/dev/null; then
-  zstyle ':prompt:pure:git:stash' show yes
-  prompt pure
+  if whence -w prompt_pure_setup &>/dev/null; then
+    zstyle ':prompt:pure:git:stash' show yes
+    prompt pure
+  fi
 fi
 
 # ── prompt timestamp ─────────────────────────────────────────────────────────

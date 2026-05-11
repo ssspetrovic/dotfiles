@@ -35,10 +35,23 @@ detect_os() {
   elif [[ -f /etc/os-release ]]; then
     # shellcheck disable=SC1091
     source /etc/os-release
-    case "$ID" in
+    local os_id="${ID:-unknown}"
+    local os_like=" ${ID_LIKE:-} "
+
+    case "$os_id" in
       ubuntu | debian) echo "ubuntu" ;;
       fedora) echo "fedora" ;;
-      *) error "Unsupported distro: $ID" ;;
+      arch) echo "arch" ;;
+      opensuse* | suse | sles | sled) echo "opensuse" ;;
+      *)
+        case "$os_like" in
+          *" debian "*) echo "ubuntu" ;;
+          *" fedora "*) echo "fedora" ;;
+          *" arch "*) echo "arch" ;;
+          *" opensuse "* | *" suse "*) echo "opensuse" ;;
+          *) error "Unsupported distro: $os_id. Supported: macOS, Debian/Ubuntu, Fedora, Arch, openSUSE/SUSE" ;;
+        esac
+        ;;
     esac
   else
     error "Cannot detect OS"
@@ -47,6 +60,21 @@ detect_os() {
 
 OS=$(detect_os)
 info "Detected OS: $OS"
+
+wait_for_command() {
+  local command_name="$1"
+  local install_label="$2"
+  local max_wait_seconds="${3:-600}"
+  local waited=0
+
+  while ! command -v "$command_name" &>/dev/null; do
+    if (( waited >= max_wait_seconds )); then
+      error "$install_label did not finish within ${max_wait_seconds}s; complete it manually and re-run bootstrap.sh"
+    fi
+    sleep 5
+    waited=$((waited + 5))
+  done
+}
 
 # ── install git if missing ─────────────────────────────────────────────────────
 install_git() {
@@ -61,11 +89,16 @@ install_git() {
       as_root apt-get install -y git
       ;;
     fedora) as_root dnf install -y git ;;
+    arch) as_root pacman -Syu --needed --noconfirm git ;;
+    opensuse)
+      as_root zypper --non-interactive refresh
+      as_root zypper --non-interactive install --no-recommends git
+      ;;
     macos)
       # xcode-select triggers the git stub which installs CLI tools
       xcode-select --install 2>/dev/null || true
       # Wait for installation to complete
-      until command -v git &>/dev/null; do sleep 5; done
+      wait_for_command git "Xcode Command Line Tools"
       ;;
   esac
 }

@@ -42,7 +42,11 @@ set incsearch
 set hlsearch
 
 set hidden
-set clipboard=unnamedplus
+if has('clipboard') && has('unnamedplus')
+  set clipboard=unnamedplus
+elseif has('clipboard')
+  set clipboard=unnamed
+endif
 set splitbelow
 set splitright
 set updatetime=300

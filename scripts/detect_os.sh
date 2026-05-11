@@ -9,12 +9,25 @@ elif [[ -f /etc/os-release ]]; then
   # shellcheck disable=SC1091
   source /etc/os-release
   DISTRO="${ID:-unknown}"
-  case "$ID" in
+  DISTRO_LIKE=" ${ID_LIKE:-} "
+
+  case "$DISTRO" in
     ubuntu | debian) OS="ubuntu" ;;
     fedora) OS="fedora" ;;
+    arch) OS="arch" ;;
+    opensuse* | suse | sles | sled) OS="opensuse" ;;
     *)
-      echo "[detect_os] Warning: unrecognised distro '$ID', treating as ubuntu" >&2
-      OS="ubuntu"
+      case "$DISTRO_LIKE" in
+        *" debian "*) OS="ubuntu" ;;
+        *" fedora "*) OS="fedora" ;;
+        *" arch "*) OS="arch" ;;
+        *" opensuse "* | *" suse "*) OS="opensuse" ;;
+        *)
+          echo "[detect_os] Error: unsupported distro '$DISTRO'" >&2
+          echo "[detect_os] Supported: macOS, Debian/Ubuntu, Fedora, Arch, openSUSE/SUSE" >&2
+          exit 1
+          ;;
+      esac
       ;;
   esac
 else

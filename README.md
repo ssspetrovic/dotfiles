@@ -1,6 +1,6 @@
 # dotfiles
 
-Personal development environment for Ubuntu / Fedora / macOS.
+Personal development environment for macOS and common Linux distros.
 
 **Stack:** zsh · vim · tmux · pure · chezmoi · Homebrew
 
@@ -35,10 +35,30 @@ bash scripts/apply_dotfiles.sh
 
 ---
 
+## Supported Platforms
+
+| Platform | Native package manager |
+| -------- | ---------------------- |
+| macOS    | `xcode-select` + Homebrew |
+| Debian / Ubuntu | `apt-get` |
+| Fedora   | `dnf` |
+| Arch Linux | `pacman` |
+| openSUSE / SUSE | `zypper` |
+
+Unsupported Linux distros fail fast with a clear message instead of guessing the wrong package manager.
+
+---
+
 ## What Gets Installed
 
-### Native package manager (apt / dnf / xcode-select)
-Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, plus the platform compiler toolchain (`build-essential` on Ubuntu/Debian; `gcc`/`make` on Fedora).
+### Native package manager
+Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, plus the platform compiler toolchain:
+
+- Debian / Ubuntu: `build-essential`
+- Fedora: `gcc`, `gcc-c++`, `make`
+- Arch Linux: `base-devel`
+- openSUSE / SUSE: `patterns-devel-base-devel_basis`
+- macOS: Xcode Command Line Tools via `xcode-select`
 
 ### Homebrew (all platforms)
 Dev tooling via `brew/Brewfile`. Highlights:
@@ -63,6 +83,8 @@ Dev tooling via `brew/Brewfile`. Highlights:
 | `fastfetch` | Display OS logo and PC specs                       |
 
 `chezmoi` is also installed via the Brewfile and is used by `install.sh` / `scripts/apply_dotfiles.sh` to manage the dotfiles themselves.
+
+Homebrew is detected from the active `PATH`, Apple Silicon (`/opt/homebrew`), Intel macOS (`/usr/local`), standard Linuxbrew (`/home/linuxbrew/.linuxbrew`), and user-local Linuxbrew (`~/.linuxbrew`).
 
 ### dotfiles (via chezmoi)
 
@@ -97,6 +119,7 @@ dotfiles/
 │   ├── ubuntu.sh       # Ubuntu extras (locale, etc.)
 │   └── fedora.sh       # Fedora extras
 └── scripts/
+    ├── brew_shellenv.sh # shared Homebrew discovery helper
     ├── detect_os.sh    # sets $OS / $DISTRO
     ├── apply_dotfiles.sh
     ├── install_brew.sh
@@ -205,6 +228,12 @@ vim -Es -u ~/.vimrc +PlugUpdate +qall
 
 **brew not found after install:** Run `exec zsh` or open a new terminal to pick up the updated PATH from `.zshenv`.
 
+**Xcode Command Line Tools timeout on macOS:** If the macOS installer dialog is dismissed or stalls, complete `xcode-select --install` manually and re-run `bootstrap.sh` or `install.sh`.
+
+**LDAP / SSSD users:** `usermod` only works for local `/etc/passwd` users. For directory-backed accounts, run `chsh -s "$(command -v zsh)"` if your site allows it, or ask your admin to set `loginShell`.
+
+**Running as root:** A bare root shell has no reliable target user, so `install.sh` skips changing the login shell. Set `DOTFILES_TARGET_USER=<username>` if you intentionally need to manage another local user from root.
+
 **Locale error on Ubuntu:** Run `sudo locale-gen en_US.UTF-8 && sudo update-locale LANG=en_US.UTF-8` then re-login.
 
-**Icons look broken:** Install one of the Nerd Fonts (NF) and use set it as the main font in your terminal of choice.
+**Icons look broken:** Install one of the Nerd Fonts (NF) and set it as the main font in your terminal of choice.
