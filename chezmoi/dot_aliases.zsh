@@ -1,8 +1,8 @@
 if command -v eza &>/dev/null; then
-  alias ls='eza --icons'
-  alias ll='eza -lah --icons --git'
-  alias la='eza -a --icons'
-  alias lt='eza --tree --icons'
+  alias ls='eza --icons --group-directories-first'
+  alias ll='eza -lah --group --icons --git --time-style=long-iso --group-directories-first'
+  alias la='eza -a --icons --group-directories-first'
+  alias lt='eza --tree --icons --group-directories-first'
 elif [[ "$OSTYPE" == darwin* ]]; then
   alias ls='ls -G'
   alias ll='ls -lahG'
