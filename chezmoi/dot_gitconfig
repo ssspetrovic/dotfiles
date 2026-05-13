@@ -55,7 +55,7 @@
   br  = branch
   bra = branch -a
   bd  = branch -d
-  bD  = branch -D
+  bdf = branch -D
 
   # commits
   c   = commit

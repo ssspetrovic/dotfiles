@@ -63,6 +63,8 @@ FEDORA_EXTRA=(
   make
   ca-certificates
   gnupg2
+  wl-clipboard
+  xclip
 )
 
 ARCH_EXTRA=(
@@ -106,7 +108,7 @@ case "$OS" in
     # We only ensure xcode CLI tools are present here.
     if ! xcode-select -p &>/dev/null; then
       info "Installing Xcode Command Line Tools..."
-      xcode-select --install
+      xcode-select --install 2>/dev/null || true
       wait_for_xcode_cli_tools
     else
       info "Xcode CLI tools already installed"
