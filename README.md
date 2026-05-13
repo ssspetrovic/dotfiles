@@ -191,12 +191,15 @@ vim -Es -u ~/.vimrc +PlugUpdate +qall
 
 ### tmux (prefix: `Ctrl-a`)
 
+The status bar shows prefix/copy-mode state plus CPU and RAM once TPM plugins have been installed with `prefix I`.
+
 | Key              | Action                     |
 | ---------------- | -------------------------- |
 | `prefix \|`      | Split horizontal           |
 | `prefix -`       | Split vertical             |
 | `prefix h/j/k/l` | Navigate panes             |
 | `prefix H/J/K/L` | Resize panes               |
+| `prefix m`       | Toggle tmux mouse mode     |
 | `prefix r`       | Reload config              |
 | `prefix I`       | Install/update TPM plugins |
 
