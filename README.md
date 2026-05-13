@@ -55,7 +55,7 @@ Unsupported Linux distros fail fast with a clear message instead of guessing the
 Core system tools only: `git`, `curl`, `wget`, `zsh`, `vim`, `tmux`, plus the platform compiler toolchain:
 
 - Debian / Ubuntu: `build-essential`
-- Fedora: `gcc`, `gcc-c++`, `make`
+- Fedora: `gcc`, `gcc-c++`, `make`, `wl-clipboard`, `xclip`
 - Arch Linux: `base-devel`
 - openSUSE / SUSE: `patterns-devel-base-devel_basis`
 - macOS: Xcode Command Line Tools via `xcode-select`
@@ -235,5 +235,7 @@ vim -Es -u ~/.vimrc +PlugUpdate +qall
 **Running as root:** A bare root shell has no reliable target user, so `install.sh` skips changing the login shell. Set `DOTFILES_TARGET_USER=<username>` if you intentionally need to manage another local user from root.
 
 **Locale error on Ubuntu:** Run `sudo locale-gen en_US.UTF-8 && sudo update-locale LANG=en_US.UTF-8` then re-login.
+
+**tmux mouse copy on Linux:** Mouse selections use tmux copy mode when `mouse on` is enabled. On Fedora, `wl-copy` handles Wayland sessions and `xclip` handles X11; both are installed by `install.sh`.
 
 **Icons look broken:** Install one of the Nerd Fonts (NF) and set it as the main font in your terminal of choice.
