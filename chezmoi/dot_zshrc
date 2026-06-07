@@ -22,20 +22,27 @@ setopt EXTENDED_GLOB
 setopt INTERACTIVE_COMMENTS   # allow pasted '#' comment lines in interactive shells
 
 # ── completion ────────────────────────────────────────────────────────────────
-autoload -Uz compinit
-
 BREW_PREFIX="${HOMEBREW_PREFIX:-}"
 if [[ -z "$BREW_PREFIX" ]] && command -v brew &>/dev/null; then
   BREW_PREFIX="$(brew --prefix 2>/dev/null)"
 fi
 
-if [[ -n "$BREW_PREFIX" && -d "$BREW_PREFIX/share/zsh/site-functions" ]]; then
-  fpath+=("$BREW_PREFIX/share/zsh/site-functions")
+# Avoid inherited stale FPATH entries from old zsh/Homebrew installs.
+unset FPATH
+
+if [[ -n "$BREW_PREFIX" ]]; then
+  fpath=(
+    "$BREW_PREFIX/share/zsh/functions"
+    "$BREW_PREFIX/share/zsh/site-functions"
+    $fpath
+  )
 fi
 
 if [[ -d /usr/share/zsh/vendor-completions ]]; then
   fpath+=(/usr/share/zsh/vendor-completions)
 fi
+
+autoload -Uz compinit add-zsh-hook is-at-least bashcompinit
 
 # Ignore insecure completion dirs silently (common on brew systems)
 zstyle ':completion:*' rehash true
