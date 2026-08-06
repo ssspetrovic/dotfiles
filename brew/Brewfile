@@ -34,7 +34,6 @@ brew "lazygit"                  # terminal git UI
 
 # ── editor ────────────────────────────────────────────────────────────────────
 brew "neovim"
-brew "vim"
 
 # ── dev tools ─────────────────────────────────────────────────────────────────
 brew "mise"                     # runtime version manager (replaces nvm/pyenv/rbenv)
